@@ -18,7 +18,6 @@
         body { font-family: 'Georgia', serif; background-color: var(--bg-claro); color: var(--marrom-escuro); margin: 0; padding: 20px; line-height: 1.6; }
         .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(91, 72, 74, 0.1); }
         
-        /* Título Estilizado */
         .titulo-app {
             text-align: center;
             color: var(--marrom-escuro);
@@ -43,12 +42,7 @@
 
         .form-adicionar { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid var(--bege-medio); }
         
-        /* Layout para colocar Nome e Tom na mesma linha */
-        .linha-inputs {
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-        }
+        .linha-inputs { display: flex; gap: 15px; align-items: flex-end; }
         .grupo-nome { flex: 1; }
         .grupo-tom { width: 90px; }
 
@@ -74,16 +68,13 @@
         .categoria h3 { margin-top: 0; color: var(--marrom-escuro); border-bottom: 2px solid var(--bege-medio); padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .btn-remover-cat { font-size: 0.6em; background-color: transparent; color: var(--marrom-terracota); border: 1px solid var(--marrom-terracota); padding: 2px 8px; border-radius: 5px; cursor: pointer; }
         
-        /* Estrutura da música na lista */
         .musica-item-container { background-color: #ffffff; margin: 8px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
         .musica-linha { display: flex; align-items: center; width: 100%; cursor: pointer; }
         .harmonia-vocal { background-color: var(--bege-medio); border-left: 5px solid var(--marrom-terracota); font-weight: bold; }
         
-        /* Tags visuais */
         .tag-vozes { font-size: 0.75em; background-color: var(--marrom-terracota); color: var(--bg-claro); padding: 3px 8px; border-radius: 12px; margin-left: auto; font-family: sans-serif; }
         .tag-tom { font-size: 0.85em; background-color: var(--bege-claro); color: var(--marrom-escuro); padding: 2px 6px; border-radius: 5px; margin-left: 10px; font-weight: bold; border: 1px solid var(--bege-medio); }
         
-        /* Estilo da Letra Expansível */
         .letra-detalhes { margin-top: 10px; margin-left: 32px; font-size: 0.95em; color: var(--marrom-escuro); }
         .letra-detalhes summary { cursor: pointer; color: var(--marrom-terracota); font-weight: bold; font-style: italic; outline: none; }
         .letra-texto { margin-top: 8px; background-color: var(--bg-claro); padding: 10px; border-radius: 5px; white-space: pre-wrap; font-family: 'Georgia', serif; }
@@ -102,7 +93,6 @@
         #lista-final-conteudo li { padding: 12px 0; border-bottom: 1px solid var(--bg-claro); }
         #lista-final-conteudo li strong { color: var(--marrom-terracota); }
         
-        /* Ajuste para telas muito pequenas */
         @media (max-width: 400px) {
             .linha-inputs { flex-direction: column; gap: 0; align-items: stretch; }
             .grupo-tom { width: 100%; }
@@ -161,7 +151,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // Suas chaves do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCom0Wd2TtFnkXzgJoolgexsFe2Znrxuds",
         authDomain: "mpceu-a93e3.firebaseapp.com",
@@ -196,12 +185,47 @@
             return;
         }
 
+        // === VERIFICAÇÃO DE DUPLICIDADE CROSSCHECK ===
+        const nomeNormalizado = nome.toLowerCase().trim();
+        const letraNormalizada = letra ? letra.toLowerCase().replace(/\s/g, '') : ""; // Remove espaços da letra para cruzar melhor
+
+        let musicaDuplicada = false;
+        let categoriaExistente = "";
+
+        for (const [cat, musicasObj] of Object.entries(repertorio)) {
+            if (!musicasObj) continue;
+            for (const [id, musicaExistente] of Object.entries(musicasObj)) {
+                // Checa pelo nome
+                if (musicaExistente.nome && musicaExistente.nome.toLowerCase().trim() === nomeNormalizado) {
+                    musicaDuplicada = true;
+                    categoriaExistente = cat;
+                    break;
+                }
+                // Checa pela letra (se possuir letra e tiver mais de 15 caracteres para evitar cruzar "Amém")
+                if (letraNormalizada.length > 15 && musicaExistente.letra) {
+                    const letraBanco = musicaExistente.letra.toLowerCase().replace(/\s/g, '');
+                    if (letraBanco === letraNormalizada) {
+                        musicaDuplicada = true;
+                        categoriaExistente = cat;
+                        break;
+                    }
+                }
+            }
+            if (musicaDuplicada) break;
+        }
+
+        if (musicaDuplicada) {
+            alert(`Atenção: Esta música (ou a letra dela) já está cadastrada na categoria "${categoriaExistente}".\nVerifique a lista antes de adicionar novamente.`);
+            return; // Bloqueia o salvamento e sai da função
+        }
+        // =============================================
+
         const categoriaRef = ref(db, 'repertorio/' + categoria);
         const novaMusicaRef = push(categoriaRef);
         
         set(novaMusicaRef, {
             nome: nome,
-            tom: tom, // Salvando o tom no banco
+            tom: tom, 
             letra: letra, 
             harmonia: harmonia
         }).then(() => {
@@ -266,7 +290,6 @@
                 labelLinha.appendChild(checkbox);
                 labelLinha.appendChild(document.createTextNode(musica.nome));
 
-                // Exibe a tag com o Tom da música, se houver
                 if (musica.tom) {
                     let tagTom = document.createElement('span');
                     tagTom.className = 'tag-tom';
@@ -274,7 +297,6 @@
                     labelLinha.appendChild(tagTom);
                 }
 
-                // Tag de Vozes
                 if (musica.harmonia) {
                     let tag = document.createElement('span');
                     tag.className = 'tag-vozes';
@@ -352,7 +374,6 @@
 
             let texto = `<strong>${cat}:</strong> ${cb.value}`;
             
-            // Adiciona o tom entre colchetes na lista gerada
             if (musicaObj && musicaObj.tom) {
                 texto += ` <span style="color: var(--marrom-escuro); font-weight: bold;">[${musicaObj.tom}]</span>`;
             }
