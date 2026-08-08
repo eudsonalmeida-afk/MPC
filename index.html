@@ -157,7 +157,6 @@
     const repertorioRef = ref(db, 'repertorio');
 
     let repertorio = {};
-    // Variável para lembrar quais categorias o usuário fechou na tela
     let categoriasFechadas = new Set();
 
     onValue(repertorioRef, (snapshot) => {
@@ -180,6 +179,7 @@
         if (texto.includes('comunhão') || texto.includes('comunhao')) return "Comunhão";
         if (texto.includes('ação de graças') || texto.includes('acao de gracas') || texto.includes('graças')) return "Ação de Graças";
         if (texto.includes('final') || texto.includes('encerramento') || texto.includes('saída') || texto.includes('saida')) return "Canto Final";
+        if (texto.includes('páscoa') || texto.includes('pascoa') || texto.includes('pascal')) return "Tempo da Páscoa";
         if (texto.includes('mariano') || texto.includes('maria')) return "Canto Mariano";
 
         // Se não for nenhuma das mapeadas, deixa a primeira letra de cada palavra maiúscula
@@ -248,7 +248,6 @@
         });
     });
 
-    // Função de clique no título para abrir/fechar a categoria
     window.toggleCategoria = function(categoriaNome) {
         if (categoriasFechadas.has(categoriaNome)) {
             categoriasFechadas.delete(categoriaNome); // Abre
@@ -274,22 +273,21 @@
         const container = document.getElementById('categorias-container');
         container.innerHTML = ''; 
 
-        // Definindo a ordem padrão do rito católico para exibir as categorias
+        // Adicionado o Tempo da Páscoa na ordem correta
         const ordemMissa = [
             "Canto de Entrada", "Ato Penitencial", "Glória", "Aclamação ao Evangelho",
             "Ofertório", "Santo", "Canto da Paz", "Cordeiro de Deus", "Comunhão",
-            "Ação de Graças", "Canto Final", "Canto Mariano"
+            "Ação de Graças", "Canto Final", "Tempo da Páscoa", "Canto Mariano"
         ];
 
-        // Ordena as categorias pegando as que existem no banco e alinhando com a ordem acima
         let categoriasAtuais = Object.keys(repertorio);
         categoriasAtuais.sort((a, b) => {
             let indexA = ordemMissa.indexOf(a);
             let indexB = ordemMissa.indexOf(b);
-            if (indexA === -1) indexA = 999; // Se não estiver na lista padrão, joga pro fim
+            if (indexA === -1) indexA = 999; 
             if (indexB === -1) indexB = 999;
             if (indexA !== indexB) return indexA - indexB;
-            return a.localeCompare(b); // Desempate alfabético
+            return a.localeCompare(b);
         });
 
         categoriasAtuais.forEach((categoria) => {
@@ -300,7 +298,6 @@
             let cabecalho = document.createElement('div');
             cabecalho.className = 'categoria-header';
             
-            // Define a setinha baseada se a categoria está no Set de fechadas
             const estaFechada = categoriasFechadas.has(categoria);
             const icone = estaFechada ? '▶' : '▼';
             
@@ -312,7 +309,6 @@
             `;
             divCategoria.appendChild(cabecalho);
 
-            // Container (caixa) que segura a lista de músicas, para podermos esconder/mostrar
             let divLista = document.createElement('div');
             divLista.style.display = estaFechada ? 'none' : 'block';
 
