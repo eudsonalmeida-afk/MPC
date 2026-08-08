@@ -81,7 +81,7 @@
 
         /* Ações das músicas */
         .acoes-musica { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-        .btn-editar-musica { background: none; border: none; color: #d9bf9e; cursor: pointer; font-size: 1.2em; padding: 0; transition: 0.2s;}
+        .btn-editar-musica { background: none; border: none; color: #000000; cursor: pointer; font-size: 1.2em; padding: 0; transition: 0.2s;} /* Lápis agora é preto */
         .btn-editar-musica:hover { color: var(--marrom-terracota); }
         .btn-remover-musica { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 1.2em; padding: 0; }
 
@@ -268,7 +268,6 @@
     let repertorio = {};
     let categoriasFechadas = new Set();
     
-    // Variáveis para controle da edição
     let editandoId = null;
     let editandoCatOriginal = null;
 
@@ -317,9 +316,6 @@
         return texto.replace(/\b\w/g, char => char.toUpperCase());
     }
     
-    // ==========================================
-    // FUNÇÕES DE EDIÇÃO (MODAL)
-    // ==========================================
     window.abrirModalEdicao = function(cat, id) {
         editandoId = id;
         editandoCatOriginal = cat;
@@ -377,14 +373,13 @@
         const nomeNormalizado = nome.toLowerCase().trim();
         const letraNormalizada = letra ? letra.toLowerCase().replace(/\s/g, '') : ""; 
 
-        // Crosscheck garantindo que não barra a própria música que está sendo editada
         let musicaDuplicada = false;
         let categoriaExistente = "";
 
         for (const [cat, musicasObj] of Object.entries(repertorio)) {
             if (!musicasObj) continue;
             for (const [id, musicaExistente] of Object.entries(musicasObj)) {
-                if (id === editandoId && cat === editandoCatOriginal) continue; // Pula a própria música
+                if (id === editandoId && cat === editandoCatOriginal) continue; 
 
                 if (musicaExistente.nome && musicaExistente.nome.toLowerCase().trim() === nomeNormalizado) {
                     musicaDuplicada = true;
@@ -417,22 +412,17 @@
         };
 
         if (categoriaNormalizada !== editandoCatOriginal) {
-            // Se mudou de categoria, remove da antiga e cria na nova
             remove(ref(db, 'repertorio/' + editandoCatOriginal + '/' + editandoId));
             set(ref(db, 'repertorio/' + categoriaNormalizada + '/' + editandoId), dadosAtualizados).then(() => {
                 fecharModalEdicao();
             });
         } else {
-            // Se manteve a categoria, apenas atualiza
             update(ref(db, 'repertorio/' + editandoCatOriginal + '/' + editandoId), dadosAtualizados).then(() => {
                 fecharModalEdicao();
             });
         }
     });
 
-    // ==========================================
-    // FUNÇÕES DE ADIÇÃO E RENDERIZAÇÃO
-    // ==========================================
     document.getElementById('btn-salvar').addEventListener('click', () => {
         let categoriaInput = document.getElementById('nova-categoria').value.trim();
         const nome = document.getElementById('nome-musica').value.trim();
@@ -682,7 +672,6 @@
                     labelLinha.appendChild(tag);
                 }
 
-                // Cria os botões de ação (Editar e Remover)
                 let divAcoes = document.createElement('div');
                 divAcoes.className = 'acoes-musica';
                 
