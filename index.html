@@ -33,23 +33,23 @@
             margin-left: 8px;
         }
 
-        h2 { text-align: center; color: var(--marrom-terracota); }
+        h2 { text-align: center; color: var(--marrom-terracota); margin-top: 0; }
 
-        .form-adicionar { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid var(--bege-medio); }
+        .form-adicionar, .filtros-container { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid var(--bege-medio); }
         
-        .linha-inputs { display: flex; gap: 15px; align-items: flex-end; }
-        .grupo-nome { flex: 1; }
-        .grupo-tom { width: 90px; }
+        .linha-inputs { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; }
+        .grupo-flex { flex: 1; }
+        .grupo-pequeno { width: 90px; }
 
-        .form-adicionar label { display: block; margin-bottom: 5px; }
-        .form-adicionar input[type="text"], .form-adicionar textarea { width: 100%; padding: 10px; margin: 0 0 15px 0; border: 1px solid var(--marrom-escuro); border-radius: 5px; box-sizing: border-box; font-family: inherit; }
-        .form-adicionar textarea { resize: vertical; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid var(--marrom-escuro); border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        textarea { resize: vertical; margin-bottom: 15px; }
+        select { background-color: #fff; }
         
         .checkbox-container { display: flex; align-items: center; margin-bottom: 15px; }
-        .btn-adicionar { background-color: var(--marrom-escuro); width: 100%; margin: 0; }
+        .btn-adicionar { background-color: var(--marrom-escuro); color: var(--bg-claro); width: 100%; border: none; padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         .btn-adicionar:hover { background-color: #403234; }
 
-        /* Ajustes das Categorias e Botões Retráteis */
         .categoria { background-color: var(--bege-claro); margin-bottom: 20px; padding: 15px; border-radius: 10px; }
         .categoria-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bege-medio); padding-bottom: 5px; margin-bottom: 10px; }
         .categoria-header h3 { margin: 0; color: var(--marrom-escuro); display: flex; align-items: center; gap: 8px; font-size: 1.1em; user-select: none; }
@@ -59,11 +59,12 @@
         .btn-remover-cat:hover { background-color: var(--marrom-terracota); color: var(--bg-claro); }
         
         .musica-item-container { background-color: #ffffff; margin: 8px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
-        .musica-linha { display: flex; align-items: center; width: 100%; cursor: pointer; }
+        .musica-linha { display: flex; align-items: center; width: 100%; cursor: pointer; flex-wrap: wrap; gap: 5px; }
         .harmonia-vocal { background-color: var(--bege-medio); border-left: 5px solid var(--marrom-terracota); font-weight: bold; }
         
         .tag-vozes { font-size: 0.75em; background-color: var(--marrom-terracota); color: var(--bg-claro); padding: 3px 8px; border-radius: 12px; margin-left: auto; font-family: sans-serif; }
-        .tag-tom { font-size: 0.85em; background-color: var(--bege-claro); color: var(--marrom-escuro); padding: 2px 6px; border-radius: 5px; margin-left: 10px; font-weight: bold; border: 1px solid var(--bege-medio); }
+        .tag-tom { font-size: 0.85em; background-color: var(--bege-claro); color: var(--marrom-escuro); padding: 2px 6px; border-radius: 5px; font-weight: bold; border: 1px solid var(--bege-medio); }
+        .tag-tempo { font-size: 0.75em; background-color: var(--marrom-escuro); color: var(--bege-claro); padding: 3px 8px; border-radius: 12px; font-family: sans-serif; }
         
         .letra-detalhes { margin-top: 10px; margin-left: 32px; font-size: 0.95em; color: var(--marrom-escuro); }
         .letra-detalhes summary { cursor: pointer; color: var(--marrom-terracota); font-weight: bold; font-style: italic; outline: none; }
@@ -71,21 +72,20 @@
 
         .btn-remover-musica { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 1.2em; margin-left: 10px; padding: 0 5px; }
 
-        input[type="checkbox"].check-lista { margin-right: 12px; transform: scale(1.3); accent-color: var(--marrom-terracota); }
+        input[type="checkbox"].check-lista { margin-right: 8px; transform: scale(1.3); accent-color: var(--marrom-terracota); }
 
         .controles { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; text-align: center; margin-top: 30px; }
-        input[type="date"] { padding: 10px; border: 1px solid var(--marrom-escuro); border-radius: 5px; color: var(--marrom-escuro); font-family: inherit; }
-        button { background-color: var(--marrom-terracota); color: var(--bg-claro); border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: 0.3s; }
-        button:hover { background-color: var(--marrom-escuro); }
+        .controles button { background-color: var(--marrom-terracota); color: var(--bg-claro); border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: 0.3s; margin-left: 10px; }
+        .controles button:hover { background-color: var(--marrom-escuro); }
 
         #lista-final-container { display: none; margin-top: 30px; padding: 20px; border: 2px dashed var(--marrom-escuro); border-radius: 10px; background-color: #ffffff; }
         #lista-final-conteudo { list-style-type: none; padding: 0; }
         #lista-final-conteudo li { padding: 12px 0; border-bottom: 1px solid var(--bg-claro); }
         #lista-final-conteudo li strong { color: var(--marrom-terracota); }
         
-        @media (max-width: 400px) {
-            .linha-inputs { flex-direction: column; gap: 0; align-items: stretch; }
-            .grupo-tom { width: 100%; }
+        @media (max-width: 500px) {
+            .linha-inputs { flex-direction: column; gap: 10px; align-items: stretch; }
+            .grupo-pequeno { width: 100%; }
         }
     </style>
 </head>
@@ -94,17 +94,37 @@
 <div class="container">
     <h1 class="titulo-app">Repertório <span class="destaque-mpc">MPC</span></h1>
     
+    <!-- Formulário de Adição -->
     <div class="form-adicionar">
-        <h2>Adicionar Nova Música</h2>
-        <label for="nova-categoria"><strong>Categoria / Momento da Missa:</strong></label>
-        <input type="text" id="nova-categoria" placeholder="Ex: Canto de Entrada, Glória..." required>
+        <h2>Adicionar Música</h2>
+        
+        <div class="linha-inputs">
+            <div class="grupo-flex">
+                <label for="tempo-musica"><strong>Tempo Litúrgico:</strong></label>
+                <select id="tempo-musica" onchange="toggleFestaInput()">
+                    <option value="Geral (Qualquer Tempo)">Geral (Qualquer Tempo)</option>
+                    <option value="Advento">Advento</option>
+                    <option value="Natal">Natal</option>
+                    <option value="Quaresma">Quaresma</option>
+                    <option value="Tempo da Páscoa">Tempo da Páscoa</option>
+                    <option value="Tempo Comum">Tempo Comum</option>
+                    <option value="Festa">Festa / Solenidade (Especificar)</option>
+                </select>
+                <!-- Caixinha extra que só aparece se escolher "Festa" -->
+                <input type="text" id="tempo-festa" placeholder="Qual festa? Ex: Padroeiro" style="display: none; margin-top: 8px;">
+            </div>
+            <div class="grupo-flex">
+                <label for="nova-categoria"><strong>Momento da Missa:</strong></label>
+                <input type="text" id="nova-categoria" placeholder="Ex: Canto de Entrada..." required>
+            </div>
+        </div>
 
         <div class="linha-inputs">
-            <div class="grupo-nome">
+            <div class="grupo-flex">
                 <label for="nome-musica"><strong>Nome da Música:</strong></label>
                 <input type="text" id="nome-musica" placeholder="Ex: Senhor, Tende Piedade" required>
             </div>
-            <div class="grupo-tom">
+            <div class="grupo-pequeno">
                 <label for="tom-musica"><strong>Tom:</strong></label>
                 <input type="text" id="tom-musica" placeholder="Ex: G, Dm">
             </div>
@@ -121,13 +141,33 @@
         <button class="btn-adicionar" id="btn-salvar">Salvar Música no App</button>
     </div>
 
+    <!-- Filtros Inteligentes -->
+    <div class="filtros-container">
+        <h3 style="margin-top: 0; color: var(--marrom-escuro); text-align: center;">Filtrar / Buscar Músicas</h3>
+        <div class="linha-inputs" style="margin-bottom: 0;">
+            <div class="grupo-flex">
+                <label for="filtro-tempo"><strong>Por Tempo Litúrgico:</strong></label>
+                <select id="filtro-tempo" onchange="renderizarLista()">
+                    <option value="Todos">Todos os Tempos</option>
+                </select>
+            </div>
+            <div class="grupo-flex">
+                <label for="filtro-categoria"><strong>Por Categoria:</strong></label>
+                <select id="filtro-categoria" onchange="renderizarLista()">
+                    <option value="Todas">Todas as Categorias</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
     <div id="categorias-container">
         <p style="text-align: center;">Carregando repertório...</p>
     </div>
 
+    <!-- Controles de Geração de Lista -->
     <div class="controles">
         <label for="data-missa"><strong>Data da Missa:</strong></label>
-        <input type="date" id="data-missa" required>
+        <input type="date" id="data-missa" required style="width: auto; display: inline-block;">
         <button id="btn-gerar-lista">Gerar Lista Final</button>
     </div>
 
@@ -157,17 +197,29 @@
     const repertorioRef = ref(db, 'repertorio');
 
     let repertorio = {};
-    let categoriasFechadas = new Set();
+    let categoriasFechadas = new Set(); // Memória das listas retraídas
 
     onValue(repertorioRef, (snapshot) => {
         repertorio = snapshot.val() || {};
-        renderizarInterface();
+        atualizarFiltrosDOM(); // Atualiza as opções do select de filtros
+        renderizarLista();     // Desenha a tela baseada nos filtros
     });
 
-    // Função que interpreta o texto digitado e corrige o nome da categoria
+    // Mostra ou oculta o input de digitar a festa
+    window.toggleFestaInput = function() {
+        const select = document.getElementById('tempo-musica');
+        const inputFesta = document.getElementById('tempo-festa');
+        if (select.value === 'Festa') {
+            inputFesta.style.display = 'block';
+            inputFesta.focus();
+        } else {
+            inputFesta.style.display = 'none';
+        }
+    }
+
+    // Auto-correção das categorias
     function normalizarCategoria(input) {
         const texto = input.toLowerCase().trim();
-        
         if (texto.includes('entrada') || texto.includes('abertura')) return "Canto de Entrada";
         if (texto.includes('penitencial') || texto.includes('perdão') || texto.includes('perdao')) return "Ato Penitencial";
         if (texto.includes('glória') || texto.includes('gloria') || texto.includes('louvor')) return "Glória";
@@ -179,10 +231,7 @@
         if (texto.includes('comunhão') || texto.includes('comunhao')) return "Comunhão";
         if (texto.includes('ação de graças') || texto.includes('acao de gracas') || texto.includes('graças')) return "Ação de Graças";
         if (texto.includes('final') || texto.includes('encerramento') || texto.includes('saída') || texto.includes('saida')) return "Canto Final";
-        if (texto.includes('páscoa') || texto.includes('pascoa') || texto.includes('pascal')) return "Tempo da Páscoa";
         if (texto.includes('mariano') || texto.includes('maria')) return "Canto Mariano";
-
-        // Se não for nenhuma das mapeadas, deixa a primeira letra de cada palavra maiúscula
         return texto.replace(/\b\w/g, char => char.toUpperCase());
     }
 
@@ -192,15 +241,23 @@
         const tom = document.getElementById('tom-musica').value.trim();
         const letra = document.getElementById('letra-musica').value.trim();
         const harmonia = document.getElementById('tem-harmonia').checked;
+        
+        let tempoFinal = document.getElementById('tempo-musica').value;
+        if (tempoFinal === 'Festa') {
+            const inputFesta = document.getElementById('tempo-festa').value.trim();
+            if(!inputFesta) {
+                alert("Por favor, digite o nome da Festa!");
+                return;
+            }
+            tempoFinal = "Festa: " + inputFesta;
+        }
 
         if (!categoriaInput || !nome) {
-            alert("Preencha ao menos a categoria e o nome da música!");
+            alert("Preencha ao menos o momento da missa e o nome da música!");
             return;
         }
 
-        // Aplica o filtro de auto-correção da categoria
         const categoria = normalizarCategoria(categoriaInput);
-
         const nomeNormalizado = nome.toLowerCase().trim();
         const letraNormalizada = letra ? letra.toLowerCase().replace(/\s/g, '') : ""; 
 
@@ -228,7 +285,7 @@
         }
 
         if (musicaDuplicada) {
-            alert(`Atenção: Esta música (ou a letra dela) já está cadastrada na categoria "${categoriaExistente}".\nVerifique a lista antes de adicionar novamente.`);
+            alert(`Atenção: Esta música já está cadastrada na categoria "${categoriaExistente}".`);
             return; 
         }
 
@@ -239,22 +296,27 @@
             nome: nome,
             tom: tom, 
             letra: letra, 
+            tempo: tempoFinal, // Salva o tempo litúrgico
             harmonia: harmonia
         }).then(() => {
+            // Limpa os campos após salvar
             document.getElementById('nome-musica').value = '';
             document.getElementById('tom-musica').value = '';
             document.getElementById('letra-musica').value = '';
+            document.getElementById('tempo-festa').value = '';
+            document.getElementById('tempo-festa').style.display = 'none';
+            document.getElementById('tempo-musica').value = 'Geral (Qualquer Tempo)';
             document.getElementById('tem-harmonia').checked = false;
         });
     });
 
     window.toggleCategoria = function(categoriaNome) {
         if (categoriasFechadas.has(categoriaNome)) {
-            categoriasFechadas.delete(categoriaNome); // Abre
+            categoriasFechadas.delete(categoriaNome); 
         } else {
-            categoriasFechadas.add(categoriaNome); // Fecha
+            categoriasFechadas.add(categoriaNome); 
         }
-        renderizarInterface();
+        renderizarLista();
     };
 
     window.removerMusica = function(categoria, idMusica) {
@@ -269,15 +331,51 @@
         }
     };
 
-    function renderizarInterface() {
+    // Extrai as opções únicas para os filtros
+    function atualizarFiltrosDOM() {
+        const filtroTempoSel = document.getElementById('filtro-tempo');
+        const filtroCatSel = document.getElementById('filtro-categoria');
+        
+        const tempoAtual = filtroTempoSel.value;
+        const catAtual = filtroCatSel.value;
+
+        let temposSet = new Set();
+        let categoriasSet = new Set();
+
+        for (const [cat, musicasObj] of Object.entries(repertorio)) {
+            categoriasSet.add(cat);
+            if(musicasObj) {
+                Object.values(musicasObj).forEach(m => {
+                    temposSet.add(m.tempo || 'Geral (Qualquer Tempo)');
+                });
+            }
+        }
+
+        filtroTempoSel.innerHTML = '<option value="Todos">Todos os Tempos</option>';
+        Array.from(temposSet).sort().forEach(t => {
+            filtroTempoSel.innerHTML += `<option value="${t}">${t}</option>`;
+        });
+        filtroTempoSel.value = temposSet.has(tempoAtual) ? tempoAtual : 'Todos';
+
+        filtroCatSel.innerHTML = '<option value="Todas">Todas as Categorias</option>';
+        Array.from(categoriasSet).sort().forEach(c => {
+            filtroCatSel.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+        filtroCatSel.value = categoriasSet.has(catAtual) ? catAtual : 'Todas';
+    }
+
+    // A função principal que desenha a lista considerando os filtros
+    window.renderizarLista = function() {
         const container = document.getElementById('categorias-container');
         container.innerHTML = ''; 
 
-        // Adicionado o Tempo da Páscoa na ordem correta
+        const filtroTempo = document.getElementById('filtro-tempo').value;
+        const filtroCat = document.getElementById('filtro-categoria').value;
+
         const ordemMissa = [
             "Canto de Entrada", "Ato Penitencial", "Glória", "Aclamação ao Evangelho",
             "Ofertório", "Santo", "Canto da Paz", "Cordeiro de Deus", "Comunhão",
-            "Ação de Graças", "Canto Final", "Tempo da Páscoa", "Canto Mariano"
+            "Ação de Graças", "Canto Final", "Canto Mariano"
         ];
 
         let categoriasAtuais = Object.keys(repertorio);
@@ -290,8 +388,28 @@
             return a.localeCompare(b);
         });
 
+        let temAlgoNaTela = false;
+
         categoriasAtuais.forEach((categoria) => {
+            // Filtro de Categoria
+            if (filtroCat !== 'Todas' && categoria !== filtroCat) return; 
+
             const musicasObj = repertorio[categoria];
+            if (!musicasObj) return;
+
+            let musicasArray = Object.entries(musicasObj);
+            
+            // Filtro de Tempo Litúrgico dentro da categoria
+            let musicasFiltradas = musicasArray.filter(([id, mus]) => {
+                const tempoMus = mus.tempo || 'Geral (Qualquer Tempo)';
+                return filtroTempo === 'Todos' || tempoMus === filtroTempo;
+            });
+
+            // Se a categoria ficou vazia após o filtro de tempo, nem desenha ela
+            if (musicasFiltradas.length === 0) return;
+
+            temAlgoNaTela = true;
+
             let divCategoria = document.createElement('div');
             divCategoria.className = 'categoria';
             
@@ -303,7 +421,7 @@
             
             cabecalho.innerHTML = `
                 <h3 onclick="toggleCategoria('${categoria}')" style="cursor:pointer; flex:1;">
-                    ${icone} ${categoria}
+                    ${icone} ${categoria} <span style="font-size:0.7em; font-weight:normal;">(${musicasFiltradas.length})</span>
                 </h3> 
                 <button class="btn-remover-cat" onclick="removerCategoria('${categoria}')">Apagar Categoria</button>
             `;
@@ -312,16 +430,7 @@
             let divLista = document.createElement('div');
             divLista.style.display = estaFechada ? 'none' : 'block';
 
-            const musicasArray = Object.entries(musicasObj || {});
-
-            if(musicasArray.length === 0) {
-                let p = document.createElement('p');
-                p.innerText = "Nenhuma música adicionada ainda.";
-                p.style.fontSize = "0.9em";
-                divLista.appendChild(p);
-            }
-
-            musicasArray.forEach(([idMusica, musica]) => {
+            musicasFiltradas.forEach(([idMusica, musica]) => {
                 let divContainer = document.createElement('div');
                 divContainer.className = 'musica-item-container';
                 if (musica.harmonia) {
@@ -347,6 +456,14 @@
                     tagTom.className = 'tag-tom';
                     tagTom.innerText = musica.tom;
                     labelLinha.appendChild(tagTom);
+                }
+
+                const tempoDisplay = musica.tempo || 'Geral (Qualquer Tempo)';
+                if (tempoDisplay !== 'Geral (Qualquer Tempo)') {
+                    let tagTempo = document.createElement('span');
+                    tagTempo.className = 'tag-tempo';
+                    tagTempo.innerText = tempoDisplay;
+                    labelLinha.appendChild(tagTempo);
                 }
 
                 if (musica.harmonia) {
@@ -390,8 +507,8 @@
             container.appendChild(divCategoria);
         });
         
-        if (Object.keys(repertorio).length === 0) {
-            container.innerHTML = '<p style="text-align: center;">Nenhuma música cadastrada ainda. Use o formulário acima!</p>';
+        if (!temAlgoNaTela) {
+            container.innerHTML = '<p style="text-align: center;">Nenhuma música encontrada para os filtros selecionados.</p>';
         }
     }
 
@@ -412,7 +529,7 @@
         listaConteudo.innerHTML = '';
 
         if (checkboxes.length === 0) {
-            alert("Selecione pelo menos uma música!");
+            alert("Selecione pelo menos uma música marcando a caixinha ao lado do nome!");
             return;
         }
 
