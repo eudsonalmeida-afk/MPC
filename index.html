@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repertório MPC</title>
     <style>
-        /* Importando uma fonte cursiva muito mais leve e legível do Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap');
 
         :root {
@@ -27,11 +26,10 @@
             font-size: 2.2em;
         }
         
-        /* Nova estilização da sigla MPC */
         .destaque-mpc {
-            font-family: 'Caveat', cursive; /* Fonte nova e legível */
+            font-family: 'Caveat', cursive;
             font-size: 1.3em;
-            letter-spacing: 2px; /* Dá um espacinho extra entre as letras */
+            letter-spacing: 2px;
             color: var(--marrom-terracota);
             background-color: var(--bege-claro);
             padding: 2px 18px;
@@ -45,12 +43,22 @@
 
         .form-adicionar { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid var(--bege-medio); }
         
-        /* Inputs de texto e textarea para a letra */
+        /* Layout para colocar Nome e Tom na mesma linha */
+        .linha-inputs {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .grupo-nome { flex: 1; }
+        .grupo-tom { width: 90px; }
+
+        .form-adicionar label { display: block; margin-bottom: 5px; }
+
         .form-adicionar input[type="text"], 
         .form-adicionar textarea { 
             width: 100%; 
             padding: 10px; 
-            margin: 8px 0 15px 0; 
+            margin: 0 0 15px 0; 
             border: 1px solid var(--marrom-escuro); 
             border-radius: 5px; 
             box-sizing: border-box; 
@@ -71,12 +79,15 @@
         .musica-linha { display: flex; align-items: center; width: 100%; cursor: pointer; }
         .harmonia-vocal { background-color: var(--bege-medio); border-left: 5px solid var(--marrom-terracota); font-weight: bold; }
         
+        /* Tags visuais */
+        .tag-vozes { font-size: 0.75em; background-color: var(--marrom-terracota); color: var(--bg-claro); padding: 3px 8px; border-radius: 12px; margin-left: auto; font-family: sans-serif; }
+        .tag-tom { font-size: 0.85em; background-color: var(--bege-claro); color: var(--marrom-escuro); padding: 2px 6px; border-radius: 5px; margin-left: 10px; font-weight: bold; border: 1px solid var(--bege-medio); }
+        
         /* Estilo da Letra Expansível */
         .letra-detalhes { margin-top: 10px; margin-left: 32px; font-size: 0.95em; color: var(--marrom-escuro); }
         .letra-detalhes summary { cursor: pointer; color: var(--marrom-terracota); font-weight: bold; font-style: italic; outline: none; }
         .letra-texto { margin-top: 8px; background-color: var(--bg-claro); padding: 10px; border-radius: 5px; white-space: pre-wrap; font-family: 'Georgia', serif; }
 
-        .tag-vozes { font-size: 0.75em; background-color: var(--marrom-terracota); color: var(--bg-claro); padding: 3px 8px; border-radius: 12px; margin-left: auto; font-family: sans-serif; }
         .btn-remover-musica { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 1.2em; margin-left: 10px; padding: 0 5px; }
 
         input[type="checkbox"].check-lista { margin-right: 12px; transform: scale(1.3); accent-color: var(--marrom-terracota); }
@@ -90,6 +101,12 @@
         #lista-final-conteudo { list-style-type: none; padding: 0; }
         #lista-final-conteudo li { padding: 12px 0; border-bottom: 1px solid var(--bg-claro); }
         #lista-final-conteudo li strong { color: var(--marrom-terracota); }
+        
+        /* Ajuste para telas muito pequenas */
+        @media (max-width: 400px) {
+            .linha-inputs { flex-direction: column; gap: 0; align-items: stretch; }
+            .grupo-tom { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -102,8 +119,16 @@
         <label for="nova-categoria"><strong>Categoria / Momento da Missa:</strong></label>
         <input type="text" id="nova-categoria" placeholder="Ex: Canto de Entrada, Glória..." required>
 
-        <label for="nome-musica"><strong>Nome da Música:</strong></label>
-        <input type="text" id="nome-musica" placeholder="Ex: Senhor, Tende Piedade" required>
+        <div class="linha-inputs">
+            <div class="grupo-nome">
+                <label for="nome-musica"><strong>Nome da Música:</strong></label>
+                <input type="text" id="nome-musica" placeholder="Ex: Senhor, Tende Piedade" required>
+            </div>
+            <div class="grupo-tom">
+                <label for="tom-musica"><strong>Tom:</strong></label>
+                <input type="text" id="tom-musica" placeholder="Ex: G, Dm">
+            </div>
+        </div>
 
         <label for="letra-musica"><strong>Letra da Música (Opcional):</strong></label>
         <textarea id="letra-musica" rows="4" placeholder="Cole a letra completa aqui..."></textarea>
@@ -136,7 +161,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // Configuração com as suas chaves do Firebase
+    // Suas chaves do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCom0Wd2TtFnkXzgJoolgexsFe2Znrxuds",
         authDomain: "mpceu-a93e3.firebaseapp.com",
@@ -162,6 +187,7 @@
     document.getElementById('btn-salvar').addEventListener('click', () => {
         const categoria = document.getElementById('nova-categoria').value.trim();
         const nome = document.getElementById('nome-musica').value.trim();
+        const tom = document.getElementById('tom-musica').value.trim();
         const letra = document.getElementById('letra-musica').value.trim();
         const harmonia = document.getElementById('tem-harmonia').checked;
 
@@ -175,10 +201,12 @@
         
         set(novaMusicaRef, {
             nome: nome,
-            letra: letra, // Salvando a letra no banco
+            tom: tom, // Salvando o tom no banco
+            letra: letra, 
             harmonia: harmonia
         }).then(() => {
             document.getElementById('nome-musica').value = '';
+            document.getElementById('tom-musica').value = '';
             document.getElementById('letra-musica').value = '';
             document.getElementById('tem-harmonia').checked = false;
         });
@@ -238,6 +266,15 @@
                 labelLinha.appendChild(checkbox);
                 labelLinha.appendChild(document.createTextNode(musica.nome));
 
+                // Exibe a tag com o Tom da música, se houver
+                if (musica.tom) {
+                    let tagTom = document.createElement('span');
+                    tagTom.className = 'tag-tom';
+                    tagTom.innerText = musica.tom;
+                    labelLinha.appendChild(tagTom);
+                }
+
+                // Tag de Vozes
                 if (musica.harmonia) {
                     let tag = document.createElement('span');
                     tag.className = 'tag-vozes';
@@ -257,7 +294,6 @@
 
                 divContainer.appendChild(labelLinha);
 
-                // Se houver letra cadastrada, cria o menu sanfona (details)
                 if (musica.letra) {
                     let details = document.createElement('details');
                     details.className = 'letra-detalhes';
@@ -309,16 +345,22 @@
 
         checkboxes.forEach(cb => {
             let li = document.createElement('li');
-            let texto = `<strong>${cb.dataset.categoria}:</strong> ${cb.value}`;
+            
+            const cat = cb.dataset.categoria;
+            const idMusica = cb.dataset.id;
+            const musicaObj = repertorio[cat][idMusica];
+
+            let texto = `<strong>${cat}:</strong> ${cb.value}`;
+            
+            // Adiciona o tom entre colchetes na lista gerada
+            if (musicaObj && musicaObj.tom) {
+                texto += ` <span style="color: var(--marrom-escuro); font-weight: bold;">[${musicaObj.tom}]</span>`;
+            }
+
             if (cb.dataset.harmonia === 'true') {
                 texto += ' <em>(Harmonia Vocal)</em>';
             }
             li.innerHTML = texto;
-
-            // Puxa a letra da música salva no banco para mostrar na lista final
-            const cat = cb.dataset.categoria;
-            const idMusica = cb.dataset.id;
-            const musicaObj = repertorio[cat][idMusica];
 
             if (musicaObj && musicaObj.letra) {
                 let details = document.createElement('details');
