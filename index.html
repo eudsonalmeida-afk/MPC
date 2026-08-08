@@ -18,12 +18,7 @@
         body { font-family: 'Georgia', serif; background-color: var(--bg-claro); color: var(--marrom-escuro); margin: 0; padding: 20px; line-height: 1.6; }
         .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(91, 72, 74, 0.1); }
         
-        .titulo-app {
-            text-align: center;
-            color: var(--marrom-escuro);
-            margin-bottom: 30px;
-            font-size: 2.2em;
-        }
+        .titulo-app { text-align: center; color: var(--marrom-escuro); margin-bottom: 30px; font-size: 2.2em; }
         
         .destaque-mpc {
             font-family: 'Caveat', cursive;
@@ -47,26 +42,21 @@
         .grupo-tom { width: 90px; }
 
         .form-adicionar label { display: block; margin-bottom: 5px; }
-
-        .form-adicionar input[type="text"], 
-        .form-adicionar textarea { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 0 0 15px 0; 
-            border: 1px solid var(--marrom-escuro); 
-            border-radius: 5px; 
-            box-sizing: border-box; 
-            font-family: inherit; 
-        }
+        .form-adicionar input[type="text"], .form-adicionar textarea { width: 100%; padding: 10px; margin: 0 0 15px 0; border: 1px solid var(--marrom-escuro); border-radius: 5px; box-sizing: border-box; font-family: inherit; }
         .form-adicionar textarea { resize: vertical; }
         
         .checkbox-container { display: flex; align-items: center; margin-bottom: 15px; }
         .btn-adicionar { background-color: var(--marrom-escuro); width: 100%; margin: 0; }
         .btn-adicionar:hover { background-color: #403234; }
 
+        /* Ajustes das Categorias e Botões Retráteis */
         .categoria { background-color: var(--bege-claro); margin-bottom: 20px; padding: 15px; border-radius: 10px; }
-        .categoria h3 { margin-top: 0; color: var(--marrom-escuro); border-bottom: 2px solid var(--bege-medio); padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-remover-cat { font-size: 0.6em; background-color: transparent; color: var(--marrom-terracota); border: 1px solid var(--marrom-terracota); padding: 2px 8px; border-radius: 5px; cursor: pointer; }
+        .categoria-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bege-medio); padding-bottom: 5px; margin-bottom: 10px; }
+        .categoria-header h3 { margin: 0; color: var(--marrom-escuro); display: flex; align-items: center; gap: 8px; font-size: 1.1em; user-select: none; }
+        .categoria-header h3:hover { opacity: 0.8; }
+        
+        .btn-remover-cat { font-size: 0.6em; background-color: transparent; color: var(--marrom-terracota); border: 1px solid var(--marrom-terracota); padding: 4px 8px; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .btn-remover-cat:hover { background-color: var(--marrom-terracota); color: var(--bg-claro); }
         
         .musica-item-container { background-color: #ffffff; margin: 8px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
         .musica-linha { display: flex; align-items: center; width: 100%; cursor: pointer; }
@@ -167,27 +157,52 @@
     const repertorioRef = ref(db, 'repertorio');
 
     let repertorio = {};
+    // Variável para lembrar quais categorias o usuário fechou na tela
+    let categoriasFechadas = new Set();
 
     onValue(repertorioRef, (snapshot) => {
         repertorio = snapshot.val() || {};
         renderizarInterface();
     });
 
+    // Função que interpreta o texto digitado e corrige o nome da categoria
+    function normalizarCategoria(input) {
+        const texto = input.toLowerCase().trim();
+        
+        if (texto.includes('entrada') || texto.includes('abertura')) return "Canto de Entrada";
+        if (texto.includes('penitencial') || texto.includes('perdão') || texto.includes('perdao')) return "Ato Penitencial";
+        if (texto.includes('glória') || texto.includes('gloria') || texto.includes('louvor')) return "Glória";
+        if (texto.includes('aclamação') || texto.includes('aclamacao') || texto.includes('evangelho') || texto.includes('aleluia')) return "Aclamação ao Evangelho";
+        if (texto.includes('ofertório') || texto.includes('ofertorio') || texto.includes('oferendas')) return "Ofertório";
+        if (texto === 'santo' || texto.includes('santíssimo') || texto.includes('santissimo')) return "Santo";
+        if (texto.includes('paz') || texto.includes('abraço')) return "Canto da Paz";
+        if (texto.includes('cordeiro')) return "Cordeiro de Deus";
+        if (texto.includes('comunhão') || texto.includes('comunhao')) return "Comunhão";
+        if (texto.includes('ação de graças') || texto.includes('acao de gracas') || texto.includes('graças')) return "Ação de Graças";
+        if (texto.includes('final') || texto.includes('encerramento') || texto.includes('saída') || texto.includes('saida')) return "Canto Final";
+        if (texto.includes('mariano') || texto.includes('maria')) return "Canto Mariano";
+
+        // Se não for nenhuma das mapeadas, deixa a primeira letra de cada palavra maiúscula
+        return texto.replace(/\b\w/g, char => char.toUpperCase());
+    }
+
     document.getElementById('btn-salvar').addEventListener('click', () => {
-        const categoria = document.getElementById('nova-categoria').value.trim();
+        let categoriaInput = document.getElementById('nova-categoria').value.trim();
         const nome = document.getElementById('nome-musica').value.trim();
         const tom = document.getElementById('tom-musica').value.trim();
         const letra = document.getElementById('letra-musica').value.trim();
         const harmonia = document.getElementById('tem-harmonia').checked;
 
-        if (!categoria || !nome) {
+        if (!categoriaInput || !nome) {
             alert("Preencha ao menos a categoria e o nome da música!");
             return;
         }
 
-        // === VERIFICAÇÃO DE DUPLICIDADE CROSSCHECK ===
+        // Aplica o filtro de auto-correção da categoria
+        const categoria = normalizarCategoria(categoriaInput);
+
         const nomeNormalizado = nome.toLowerCase().trim();
-        const letraNormalizada = letra ? letra.toLowerCase().replace(/\s/g, '') : ""; // Remove espaços da letra para cruzar melhor
+        const letraNormalizada = letra ? letra.toLowerCase().replace(/\s/g, '') : ""; 
 
         let musicaDuplicada = false;
         let categoriaExistente = "";
@@ -195,13 +210,11 @@
         for (const [cat, musicasObj] of Object.entries(repertorio)) {
             if (!musicasObj) continue;
             for (const [id, musicaExistente] of Object.entries(musicasObj)) {
-                // Checa pelo nome
                 if (musicaExistente.nome && musicaExistente.nome.toLowerCase().trim() === nomeNormalizado) {
                     musicaDuplicada = true;
                     categoriaExistente = cat;
                     break;
                 }
-                // Checa pela letra (se possuir letra e tiver mais de 15 caracteres para evitar cruzar "Amém")
                 if (letraNormalizada.length > 15 && musicaExistente.letra) {
                     const letraBanco = musicaExistente.letra.toLowerCase().replace(/\s/g, '');
                     if (letraBanco === letraNormalizada) {
@@ -216,9 +229,8 @@
 
         if (musicaDuplicada) {
             alert(`Atenção: Esta música (ou a letra dela) já está cadastrada na categoria "${categoriaExistente}".\nVerifique a lista antes de adicionar novamente.`);
-            return; // Bloqueia o salvamento e sai da função
+            return; 
         }
-        // =============================================
 
         const categoriaRef = ref(db, 'repertorio/' + categoria);
         const novaMusicaRef = push(categoriaRef);
@@ -236,6 +248,16 @@
         });
     });
 
+    // Função de clique no título para abrir/fechar a categoria
+    window.toggleCategoria = function(categoriaNome) {
+        if (categoriasFechadas.has(categoriaNome)) {
+            categoriasFechadas.delete(categoriaNome); // Abre
+        } else {
+            categoriasFechadas.add(categoriaNome); // Fecha
+        }
+        renderizarInterface();
+    };
+
     window.removerMusica = function(categoria, idMusica) {
         if(confirm("Tem certeza que deseja apagar essa música?")) {
             remove(ref(db, 'repertorio/' + categoria + '/' + idMusica));
@@ -252,13 +274,47 @@
         const container = document.getElementById('categorias-container');
         container.innerHTML = ''; 
 
-        for (const [categoria, musicasObj] of Object.entries(repertorio)) {
+        // Definindo a ordem padrão do rito católico para exibir as categorias
+        const ordemMissa = [
+            "Canto de Entrada", "Ato Penitencial", "Glória", "Aclamação ao Evangelho",
+            "Ofertório", "Santo", "Canto da Paz", "Cordeiro de Deus", "Comunhão",
+            "Ação de Graças", "Canto Final", "Canto Mariano"
+        ];
+
+        // Ordena as categorias pegando as que existem no banco e alinhando com a ordem acima
+        let categoriasAtuais = Object.keys(repertorio);
+        categoriasAtuais.sort((a, b) => {
+            let indexA = ordemMissa.indexOf(a);
+            let indexB = ordemMissa.indexOf(b);
+            if (indexA === -1) indexA = 999; // Se não estiver na lista padrão, joga pro fim
+            if (indexB === -1) indexB = 999;
+            if (indexA !== indexB) return indexA - indexB;
+            return a.localeCompare(b); // Desempate alfabético
+        });
+
+        categoriasAtuais.forEach((categoria) => {
+            const musicasObj = repertorio[categoria];
             let divCategoria = document.createElement('div');
             divCategoria.className = 'categoria';
             
             let cabecalho = document.createElement('div');
-            cabecalho.innerHTML = `<h3>${categoria} <button class="btn-remover-cat" onclick="removerCategoria('${categoria}')">Apagar Categoria</button></h3>`;
+            cabecalho.className = 'categoria-header';
+            
+            // Define a setinha baseada se a categoria está no Set de fechadas
+            const estaFechada = categoriasFechadas.has(categoria);
+            const icone = estaFechada ? '▶' : '▼';
+            
+            cabecalho.innerHTML = `
+                <h3 onclick="toggleCategoria('${categoria}')" style="cursor:pointer; flex:1;">
+                    ${icone} ${categoria}
+                </h3> 
+                <button class="btn-remover-cat" onclick="removerCategoria('${categoria}')">Apagar Categoria</button>
+            `;
             divCategoria.appendChild(cabecalho);
+
+            // Container (caixa) que segura a lista de músicas, para podermos esconder/mostrar
+            let divLista = document.createElement('div');
+            divLista.style.display = estaFechada ? 'none' : 'block';
 
             const musicasArray = Object.entries(musicasObj || {});
 
@@ -266,7 +322,7 @@
                 let p = document.createElement('p');
                 p.innerText = "Nenhuma música adicionada ainda.";
                 p.style.fontSize = "0.9em";
-                divCategoria.appendChild(p);
+                divLista.appendChild(p);
             }
 
             musicasArray.forEach(([idMusica, musica]) => {
@@ -331,11 +387,12 @@
                     divContainer.appendChild(details);
                 }
 
-                divCategoria.appendChild(divContainer);
+                divLista.appendChild(divContainer);
             });
 
+            divCategoria.appendChild(divLista);
             container.appendChild(divCategoria);
-        }
+        });
         
         if (Object.keys(repertorio).length === 0) {
             container.innerHTML = '<p style="text-align: center;">Nenhuma música cadastrada ainda. Use o formulário acima!</p>';
