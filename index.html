@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repertório da Missa</title>
+    <title>Repertório MPC</title>
     <style>
-        /* A mesma paleta de cores e estilos do app anterior */
         :root {
             --bg-claro: #e3e1e6;
             --bege-claro: #e1d1b8;
@@ -16,10 +15,43 @@
 
         body { font-family: 'Georgia', serif; background-color: var(--bg-claro); color: var(--marrom-escuro); margin: 0; padding: 20px; line-height: 1.6; }
         .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(91, 72, 74, 0.1); }
-        h1, h2 { text-align: center; color: var(--marrom-terracota); }
+        
+        /* Título Estilizado */
+        .titulo-app {
+            text-align: center;
+            color: var(--marrom-escuro);
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        .destaque-mpc {
+            font-family: 'Brush Script MT', 'Dancing Script', 'Great Vibes', cursive;
+            font-size: 1.4em;
+            color: var(--marrom-terracota);
+            background-color: var(--bege-claro);
+            padding: 2px 15px;
+            border-radius: 20px;
+            box-shadow: 2px 2px 5px rgba(91, 72, 74, 0.15);
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        h2 { text-align: center; color: var(--marrom-terracota); }
 
         .form-adicionar { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid var(--bege-medio); }
-        .form-adicionar input[type="text"] { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid var(--marrom-escuro); border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        
+        /* Inputs de texto e textarea para a letra */
+        .form-adicionar input[type="text"], 
+        .form-adicionar textarea { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 8px 0 15px 0; 
+            border: 1px solid var(--marrom-escuro); 
+            border-radius: 5px; 
+            box-sizing: border-box; 
+            font-family: inherit; 
+        }
+        .form-adicionar textarea { resize: vertical; }
+        
         .checkbox-container { display: flex; align-items: center; margin-bottom: 15px; }
         .btn-adicionar { background-color: var(--marrom-escuro); width: 100%; margin: 0; }
         .btn-adicionar:hover { background-color: #403234; }
@@ -28,8 +60,16 @@
         .categoria h3 { margin-top: 0; color: var(--marrom-escuro); border-bottom: 2px solid var(--bege-medio); padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .btn-remover-cat { font-size: 0.6em; background-color: transparent; color: var(--marrom-terracota); border: 1px solid var(--marrom-terracota); padding: 2px 8px; border-radius: 5px; cursor: pointer; }
         
-        .musica-item { display: flex; align-items: center; background-color: #ffffff; margin: 8px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
+        /* Estrutura da música na lista */
+        .musica-item-container { background-color: #ffffff; margin: 8px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
+        .musica-linha { display: flex; align-items: center; width: 100%; cursor: pointer; }
         .harmonia-vocal { background-color: var(--bege-medio); border-left: 5px solid var(--marrom-terracota); font-weight: bold; }
+        
+        /* Estilo da Letra Expansível */
+        .letra-detalhes { margin-top: 10px; margin-left: 32px; font-size: 0.95em; color: var(--marrom-escuro); }
+        .letra-detalhes summary { cursor: pointer; color: var(--marrom-terracota); font-weight: bold; font-style: italic; outline: none; }
+        .letra-texto { margin-top: 8px; background-color: var(--bg-claro); padding: 10px; border-radius: 5px; white-space: pre-wrap; font-family: 'Georgia', serif; }
+
         .tag-vozes { font-size: 0.75em; background-color: var(--marrom-terracota); color: var(--bg-claro); padding: 3px 8px; border-radius: 12px; margin-left: auto; font-family: sans-serif; }
         .btn-remover-musica { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 1.2em; margin-left: 10px; padding: 0 5px; }
 
@@ -42,14 +82,14 @@
 
         #lista-final-container { display: none; margin-top: 30px; padding: 20px; border: 2px dashed var(--marrom-escuro); border-radius: 10px; background-color: #ffffff; }
         #lista-final-conteudo { list-style-type: none; padding: 0; }
-        #lista-final-conteudo li { padding: 8px 0; border-bottom: 1px solid var(--bg-claro); }
+        #lista-final-conteudo li { padding: 12px 0; border-bottom: 1px solid var(--bg-claro); }
         #lista-final-conteudo li strong { color: var(--marrom-terracota); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Repertório da Missa</h1>
+    <h1 class="titulo-app">Repertório <span class="destaque-mpc">MPC</span></h1>
     
     <div class="form-adicionar">
         <h2>Adicionar Nova Música</h2>
@@ -59,12 +99,14 @@
         <label for="nome-musica"><strong>Nome da Música:</strong></label>
         <input type="text" id="nome-musica" placeholder="Ex: Senhor, Tende Piedade" required>
 
+        <label for="letra-musica"><strong>Letra da Música (Opcional):</strong></label>
+        <textarea id="letra-musica" rows="4" placeholder="Cole a letra completa aqui..."></textarea>
+
         <div class="checkbox-container">
             <input type="checkbox" id="tem-harmonia" class="check-lista">
             <label for="tem-harmonia">Tem harmonia vocal ensaiada?</label>
         </div>
 
-        <!-- Botão modificado para não usar onclick direto no HTML devido ao type="module" do Firebase -->
         <button class="btn-adicionar" id="btn-salvar">Salvar Música no App</button>
     </div>
 
@@ -84,72 +126,70 @@
     </div>
 </div>
 
-<!-- Importação do Firebase usando módulos JavaScript -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // SUBSTITUA AS INFORMAÇÕES ABAIXO PELAS DO SEU FIREBASE
+    // Configuração com as suas chaves do Firebase
     const firebaseConfig = {
-  apiKey: "AIzaSyCom0Wd2TtFnkXzgJoolgexsFe2Znrxuds",
-  authDomain: "mpceu-a93e3.firebaseapp.com",
-  databaseURL: "https://mpceu-a93e3-default-rtdb.firebaseio.com",
-  projectId: "mpceu-a93e3",
-  storageBucket: "mpceu-a93e3.firebasestorage.app",
-  messagingSenderId: "764031768022",
-  appId: "1:764031768022:web:7d52c64b4d46865486c077",
-  measurementId: "G-Q4B21EF7PN"
-};
+        apiKey: "AIzaSyCom0Wd2TtFnkXzgJoolgexsFe2Znrxuds",
+        authDomain: "mpceu-a93e3.firebaseapp.com",
+        databaseURL: "https://mpceu-a93e3-default-rtdb.firebaseio.com",
+        projectId: "mpceu-a93e3",
+        storageBucket: "mpceu-a93e3.firebasestorage.app",
+        messagingSenderId: "764031768022",
+        appId: "1:764031768022:web:7d52c64b4d46865486c077",
+        measurementId: "G-Q4B21EF7PN"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const repertorioRef = ref(db, 'repertorio');
 
     let repertorio = {};
 
-    // ESCUTA EM TEMPO REAL: Toda vez que o banco alterar, essa função roda
     onValue(repertorioRef, (snapshot) => {
         repertorio = snapshot.val() || {};
         renderizarInterface();
     });
 
-    // Função para salvar no banco de dados
     document.getElementById('btn-salvar').addEventListener('click', () => {
         const categoria = document.getElementById('nova-categoria').value.trim();
         const nome = document.getElementById('nome-musica').value.trim();
+        const letra = document.getElementById('letra-musica').value.trim();
         const harmonia = document.getElementById('tem-harmonia').checked;
 
         if (!categoria || !nome) {
-            alert("Preencha a categoria e o nome da música!");
+            alert("Preencha ao menos a categoria e o nome da música!");
             return;
         }
 
         const categoriaRef = ref(db, 'repertorio/' + categoria);
-        const novaMusicaRef = push(categoriaRef); // Gera um ID único no banco
+        const novaMusicaRef = push(categoriaRef);
         
         set(novaMusicaRef, {
             nome: nome,
+            letra: letra, // Salvando a letra no banco
             harmonia: harmonia
         }).then(() => {
             document.getElementById('nome-musica').value = '';
+            document.getElementById('letra-musica').value = '';
             document.getElementById('tem-harmonia').checked = false;
         });
     });
 
-    // Função para remover música do banco
     window.removerMusica = function(categoria, idMusica) {
         if(confirm("Tem certeza que deseja apagar essa música?")) {
             remove(ref(db, 'repertorio/' + categoria + '/' + idMusica));
         }
     };
 
-    // Função para remover categoria do banco
     window.removerCategoria = function(categoria) {
         if(confirm(`Tem certeza que deseja apagar a categoria "${categoria}" e todas as suas músicas?`)) {
             remove(ref(db, 'repertorio/' + categoria));
         }
     };
 
-    // Desenha a interface com os dados que vêm do Firebase
     function renderizarInterface() {
         const container = document.getElementById('categorias-container');
         container.innerHTML = ''; 
@@ -172,27 +212,31 @@
             }
 
             musicasArray.forEach(([idMusica, musica]) => {
-                let label = document.createElement('label');
-                label.className = 'musica-item';
+                let divContainer = document.createElement('div');
+                divContainer.className = 'musica-item-container';
                 if (musica.harmonia) {
-                    label.classList.add('harmonia-vocal');
+                    divContainer.classList.add('harmonia-vocal');
                 }
+
+                let labelLinha = document.createElement('label');
+                labelLinha.className = 'musica-linha';
 
                 let checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.value = musica.nome;
                 checkbox.dataset.categoria = categoria;
+                checkbox.dataset.id = idMusica;
                 checkbox.dataset.harmonia = musica.harmonia;
                 checkbox.className = 'check-lista';
 
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(musica.nome));
+                labelLinha.appendChild(checkbox);
+                labelLinha.appendChild(document.createTextNode(musica.nome));
 
                 if (musica.harmonia) {
                     let tag = document.createElement('span');
                     tag.className = 'tag-vozes';
                     tag.innerText = 'Vozes';
-                    label.appendChild(tag);
+                    labelLinha.appendChild(tag);
                 }
 
                 let btnRemover = document.createElement('button');
@@ -203,9 +247,27 @@
                     e.preventDefault(); 
                     window.removerMusica(categoria, idMusica);
                 };
-                label.appendChild(btnRemover);
+                labelLinha.appendChild(btnRemover);
 
-                divCategoria.appendChild(label);
+                divContainer.appendChild(labelLinha);
+
+                // Se houver letra cadastrada, cria o menu sanfona (details)
+                if (musica.letra) {
+                    let details = document.createElement('details');
+                    details.className = 'letra-detalhes';
+                    let summary = document.createElement('summary');
+                    summary.innerText = 'Ver Letra';
+                    
+                    let divLetra = document.createElement('div');
+                    divLetra.className = 'letra-texto';
+                    divLetra.innerText = musica.letra;
+                    
+                    details.appendChild(summary);
+                    details.appendChild(divLetra);
+                    divContainer.appendChild(details);
+                }
+
+                divCategoria.appendChild(divContainer);
             });
 
             container.appendChild(divCategoria);
@@ -216,7 +278,6 @@
         }
     }
 
-    // Gerador de Lista (este processo continua sendo local, apenas na tela de quem clica)
     document.getElementById('btn-gerar-lista').addEventListener('click', () => {
         const dataInput = document.getElementById('data-missa').value;
         if (!dataInput) {
@@ -247,6 +308,27 @@
                 texto += ' <em>(Harmonia Vocal)</em>';
             }
             li.innerHTML = texto;
+
+            // Puxa a letra da música salva no banco para mostrar na lista final
+            const cat = cb.dataset.categoria;
+            const idMusica = cb.dataset.id;
+            const musicaObj = repertorio[cat][idMusica];
+
+            if (musicaObj && musicaObj.letra) {
+                let details = document.createElement('details');
+                details.className = 'letra-detalhes';
+                let summary = document.createElement('summary');
+                summary.innerText = 'Ver Letra';
+                
+                let divLetra = document.createElement('div');
+                divLetra.className = 'letra-texto';
+                divLetra.innerText = musicaObj.letra;
+                
+                details.appendChild(summary);
+                details.appendChild(divLetra);
+                li.appendChild(details);
+            }
+
             listaConteudo.appendChild(li);
         });
 
@@ -257,4 +339,3 @@
 
 </body>
 </html>
-
