@@ -58,10 +58,19 @@
         .btn-remover-cat { font-size: 0.6em; background-color: transparent; color: var(--marrom-terracota); border: 1px solid var(--marrom-terracota); padding: 4px 8px; border-radius: 5px; cursor: pointer; transition: 0.2s; }
         .btn-remover-cat:hover { background-color: var(--marrom-terracota); color: var(--bg-claro); }
         
-        .musica-item-container { background-color: #ffffff; margin: 8px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
+        /* Estrutura base da caixinha da música */
+        .musica-item-container { background-color: #ffffff; margin: 10px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
         .musica-linha { display: flex; align-items: center; width: 100%; cursor: pointer; flex-wrap: wrap; gap: 5px; }
-        .harmonia-vocal { background-color: var(--bege-medio); border-left: 5px solid var(--marrom-terracota); font-weight: bold; }
+        .harmonia-vocal { background-color: var(--bege-medio) !important; border-left: 5px solid var(--marrom-terracota) !important; }
         
+        /* CORES LITÚRGICAS (Sombras nas Caixinhas) */
+        .sombra-comum { box-shadow: 0px 3px 12px rgba(76, 175, 80, 0.4); } /* Verde */
+        .sombra-natal { box-shadow: 0px 3px 12px rgba(100, 181, 246, 0.5); border: 1px solid rgba(100, 181, 246, 0.3); } /* Branco/Azul Claro */
+        .sombra-advento-quaresma { box-shadow: 0px 3px 12px rgba(156, 39, 176, 0.35); } /* Roxo Claro */
+        .sombra-festa { box-shadow: 0px 3px 12px rgba(229, 57, 53, 0.4); } /* Vermelho */
+        .sombra-pascoa { box-shadow: 0px 3px 12px rgba(255, 193, 7, 0.5); border: 1px solid rgba(255, 193, 7, 0.4); } /* Branco/Dourado */
+        .sombra-geral { box-shadow: 0px 3px 12px rgba(158, 158, 158, 0.3); } /* Cinza Clarinho */
+
         .tag-vozes { font-size: 0.75em; background-color: var(--marrom-terracota); color: var(--bg-claro); padding: 3px 8px; border-radius: 12px; margin-left: auto; font-family: sans-serif; }
         .tag-tom { font-size: 0.85em; background-color: var(--bege-claro); color: var(--marrom-escuro); padding: 2px 6px; border-radius: 5px; font-weight: bold; border: 1px solid var(--bege-medio); }
         .tag-tempo { font-size: 0.75em; background-color: var(--marrom-escuro); color: var(--bege-claro); padding: 3px 8px; border-radius: 12px; font-family: sans-serif; }
@@ -111,7 +120,7 @@
                     <option value="Festa">Festa / Solenidade (Especificar)</option>
                 </select>
                 <!-- Caixinha extra que só aparece se escolher "Festa" -->
-                <input type="text" id="tempo-festa" placeholder="Qual festa? Ex: Padroeiro" style="display: none; margin-top: 8px;">
+                <input type="text" id="tempo-festa" placeholder="Qual festa? Ex: Padroeiro, Ramos..." style="display: none; margin-top: 8px;">
             </div>
             <div class="grupo-flex">
                 <label for="nova-categoria"><strong>Momento da Missa:</strong></label>
@@ -197,15 +206,14 @@
     const repertorioRef = ref(db, 'repertorio');
 
     let repertorio = {};
-    let categoriasFechadas = new Set(); // Memória das listas retraídas
+    let categoriasFechadas = new Set();
 
     onValue(repertorioRef, (snapshot) => {
         repertorio = snapshot.val() || {};
-        atualizarFiltrosDOM(); // Atualiza as opções do select de filtros
-        renderizarLista();     // Desenha a tela baseada nos filtros
+        atualizarFiltrosDOM();
+        renderizarLista();
     });
 
-    // Mostra ou oculta o input de digitar a festa
     window.toggleFestaInput = function() {
         const select = document.getElementById('tempo-musica');
         const inputFesta = document.getElementById('tempo-festa');
@@ -217,7 +225,6 @@
         }
     }
 
-    // Auto-correção das categorias
     function normalizarCategoria(input) {
         const texto = input.toLowerCase().trim();
         if (texto.includes('entrada') || texto.includes('abertura')) return "Canto de Entrada";
@@ -296,10 +303,9 @@
             nome: nome,
             tom: tom, 
             letra: letra, 
-            tempo: tempoFinal, // Salva o tempo litúrgico
+            tempo: tempoFinal, 
             harmonia: harmonia
         }).then(() => {
-            // Limpa os campos após salvar
             document.getElementById('nome-musica').value = '';
             document.getElementById('tom-musica').value = '';
             document.getElementById('letra-musica').value = '';
@@ -331,7 +337,6 @@
         }
     };
 
-    // Extrai as opções únicas para os filtros
     function atualizarFiltrosDOM() {
         const filtroTempoSel = document.getElementById('filtro-tempo');
         const filtroCatSel = document.getElementById('filtro-categoria');
@@ -364,7 +369,6 @@
         filtroCatSel.value = categoriasSet.has(catAtual) ? catAtual : 'Todas';
     }
 
-    // A função principal que desenha a lista considerando os filtros
     window.renderizarLista = function() {
         const container = document.getElementById('categorias-container');
         container.innerHTML = ''; 
@@ -391,7 +395,6 @@
         let temAlgoNaTela = false;
 
         categoriasAtuais.forEach((categoria) => {
-            // Filtro de Categoria
             if (filtroCat !== 'Todas' && categoria !== filtroCat) return; 
 
             const musicasObj = repertorio[categoria];
@@ -399,13 +402,11 @@
 
             let musicasArray = Object.entries(musicasObj);
             
-            // Filtro de Tempo Litúrgico dentro da categoria
             let musicasFiltradas = musicasArray.filter(([id, mus]) => {
                 const tempoMus = mus.tempo || 'Geral (Qualquer Tempo)';
                 return filtroTempo === 'Todos' || tempoMus === filtroTempo;
             });
 
-            // Se a categoria ficou vazia após o filtro de tempo, nem desenha ela
             if (musicasFiltradas.length === 0) return;
 
             temAlgoNaTela = true;
@@ -433,6 +434,26 @@
             musicasFiltradas.forEach(([idMusica, musica]) => {
                 let divContainer = document.createElement('div');
                 divContainer.className = 'musica-item-container';
+                
+                // Aplica a cor (sombra) correta baseada no tempo litúrgico
+                const tempoDisplay = musica.tempo || 'Geral (Qualquer Tempo)';
+                const tLower = tempoDisplay.toLowerCase();
+                
+                if (tLower.includes('comum')) {
+                    divContainer.classList.add('sombra-comum');
+                } else if (tLower.includes('natal')) {
+                    divContainer.classList.add('sombra-natal');
+                } else if (tLower.includes('advento') || tLower.includes('quaresma')) {
+                    divContainer.classList.add('sombra-advento-quaresma');
+                } else if (tLower.includes('festa') || tLower.includes('paixão') || tLower.includes('ramos') || tLower.includes('santo')) {
+                    divContainer.classList.add('sombra-festa');
+                } else if (tLower.includes('páscoa') || tLower.includes('pascoa')) {
+                    divContainer.classList.add('sombra-pascoa');
+                } else {
+                    divContainer.classList.add('sombra-geral');
+                }
+
+                // Mantém a identificação de harmonia vocal (sem remover a sombra)
                 if (musica.harmonia) {
                     divContainer.classList.add('harmonia-vocal');
                 }
@@ -458,7 +479,6 @@
                     labelLinha.appendChild(tagTom);
                 }
 
-                const tempoDisplay = musica.tempo || 'Geral (Qualquer Tempo)';
                 if (tempoDisplay !== 'Geral (Qualquer Tempo)') {
                     let tagTempo = document.createElement('span');
                     tagTempo.className = 'tag-tempo';
