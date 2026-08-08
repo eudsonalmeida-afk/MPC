@@ -1,1 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repertório da Missa</title>
+    <style>
+        /* A mesma paleta de cores e estilos do app anterior */
+        :root {
+            --bg-claro: #e3e1e6;
+            --bege-claro: #e1d1b8;
+            --bege-medio: #d9bf9e;
+            --marrom-escuro: #5b484a;
+            --marrom-terracota: #8b5843;
+        }
+
+        body { font-family: 'Georgia', serif; background-color: var(--bg-claro); color: var(--marrom-escuro); margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(91, 72, 74, 0.1); }
+        h1, h2 { text-align: center; color: var(--marrom-terracota); }
+
+        .form-adicionar { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid var(--bege-medio); }
+        .form-adicionar input[type="text"] { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid var(--marrom-escuro); border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        .checkbox-container { display: flex; align-items: center; margin-bottom: 15px; }
+        .btn-adicionar { background-color: var(--marrom-escuro); width: 100%; margin: 0; }
+        .btn-adicionar:hover { background-color: #403234; }
+
+        .categoria { background-color: var(--bege-claro); margin-bottom: 20px; padding: 15px; border-radius: 10px; }
+        .categoria h3 { margin-top: 0; color: var(--marrom-escuro); border-bottom: 2px solid var(--bege-medio); padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-remover-cat { font-size: 0.6em; background-color: transparent; color: var(--marrom-terracota); border: 1px solid var(--marrom-terracota); padding: 2px 8px; border-radius: 5px; cursor: pointer; }
+        
+        .musica-item { display: flex; align-items: center; background-color: #ffffff; margin: 8px 0; padding: 10px; border-radius: 8px; transition: 0.2s; }
+        .harmonia-vocal { background-color: var(--bege-medio); border-left: 5px solid var(--marrom-terracota); font-weight: bold; }
+        .tag-vozes { font-size: 0.75em; background-color: var(--marrom-terracota); color: var(--bg-claro); padding: 3px 8px; border-radius: 12px; margin-left: auto; font-family: sans-serif; }
+        .btn-remover-musica { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 1.2em; margin-left: 10px; padding: 0 5px; }
+
+        input[type="checkbox"].check-lista { margin-right: 12px; transform: scale(1.3); accent-color: var(--marrom-terracota); }
+
+        .controles { background-color: var(--bege-claro); padding: 20px; border-radius: 10px; text-align: center; margin-top: 30px; }
+        input[type="date"] { padding: 10px; border: 1px solid var(--marrom-escuro); border-radius: 5px; color: var(--marrom-escuro); font-family: inherit; }
+        button { background-color: var(--marrom-terracota); color: var(--bg-claro); border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: 0.3s; }
+        button:hover { background-color: var(--marrom-escuro); }
+
+        #lista-final-container { display: none; margin-top: 30px; padding: 20px; border: 2px dashed var(--marrom-escuro); border-radius: 10px; background-color: #ffffff; }
+        #lista-final-conteudo { list-style-type: none; padding: 0; }
+        #lista-final-conteudo li { padding: 8px 0; border-bottom: 1px solid var(--bg-claro); }
+        #lista-final-conteudo li strong { color: var(--marrom-terracota); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Repertório da Missa</h1>
+    
+    <div class="form-adicionar">
+        <h2>Adicionar Nova Música</h2>
+        <label for="nova-categoria"><strong>Categoria / Momento da Missa:</strong></label>
+        <input type="text" id="nova-categoria" placeholder="Ex: Canto de Entrada, Glória..." required>
+
+        <label for="nome-musica"><strong>Nome da Música:</strong></label>
+        <input type="text" id="nome-musica" placeholder="Ex: Senhor, Tende Piedade" required>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="tem-harmonia" class="check-lista">
+            <label for="tem-harmonia">Tem harmonia vocal ensaiada?</label>
+        </div>
+
+        <!-- Botão modificado para não usar onclick direto no HTML devido ao type="module" do Firebase -->
+        <button class="btn-adicionar" id="btn-salvar">Salvar Música no App</button>
+    </div>
+
+    <div id="categorias-container">
+        <p style="text-align: center;">Carregando repertório...</p>
+    </div>
+
+    <div class="controles">
+        <label for="data-missa"><strong>Data da Missa:</strong></label>
+        <input type="date" id="data-missa" required>
+        <button id="btn-gerar-lista">Gerar Lista Final</button>
+    </div>
+
+    <div id="lista-final-container">
+        <h2 id="titulo-lista">Lista da Missa</h2>
+        <ul id="lista-final-conteudo"></ul>
+    </div>
+</div>
+
+<!-- Importação do Firebase usando módulos JavaScript -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // SUBSTITUA AS INFORMAÇÕES ABAIXO PELAS DO SEU FIREBASE
+    const firebaseConfig = {
+  apiKey: "AIzaSyCom0Wd2TtFnkXzgJoolgexsFe2Znrxuds",
+  authDomain: "mpceu-a93e3.firebaseapp.com",
+  databaseURL: "https://mpceu-a93e3-default-rtdb.firebaseio.com",
+  projectId: "mpceu-a93e3",
+  storageBucket: "mpceu-a93e3.firebasestorage.app",
+  messagingSenderId: "764031768022",
+  appId: "1:764031768022:web:7d52c64b4d46865486c077",
+  measurementId: "G-Q4B21EF7PN"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const repertorioRef = ref(db, 'repertorio');
+
+    let repertorio = {};
+
+    // ESCUTA EM TEMPO REAL: Toda vez que o banco alterar, essa função roda
+    onValue(repertorioRef, (snapshot) => {
+        repertorio = snapshot.val() || {};
+        renderizarInterface();
+    });
+
+    // Função para salvar no banco de dados
+    document.getElementById('btn-salvar').addEventListener('click', () => {
+        const categoria = document.getElementById('nova-categoria').value.trim();
+        const nome = document.getElementById('nome-musica').value.trim();
+        const harmonia = document.getElementById('tem-harmonia').checked;
+
+        if (!categoria || !nome) {
+            alert("Preencha a categoria e o nome da música!");
+            return;
+        }
+
+        const categoriaRef = ref(db, 'repertorio/' + categoria);
+        const novaMusicaRef = push(categoriaRef); // Gera um ID único no banco
+        
+        set(novaMusicaRef, {
+            nome: nome,
+            harmonia: harmonia
+        }).then(() => {
+            document.getElementById('nome-musica').value = '';
+            document.getElementById('tem-harmonia').checked = false;
+        });
+    });
+
+    // Função para remover música do banco
+    window.removerMusica = function(categoria, idMusica) {
+        if(confirm("Tem certeza que deseja apagar essa música?")) {
+            remove(ref(db, 'repertorio/' + categoria + '/' + idMusica));
+        }
+    };
+
+    // Função para remover categoria do banco
+    window.removerCategoria = function(categoria) {
+        if(confirm(`Tem certeza que deseja apagar a categoria "${categoria}" e todas as suas músicas?`)) {
+            remove(ref(db, 'repertorio/' + categoria));
+        }
+    };
+
+    // Desenha a interface com os dados que vêm do Firebase
+    function renderizarInterface() {
+        const container = document.getElementById('categorias-container');
+        container.innerHTML = ''; 
+
+        for (const [categoria, musicasObj] of Object.entries(repertorio)) {
+            let divCategoria = document.createElement('div');
+            divCategoria.className = 'categoria';
+            
+            let cabecalho = document.createElement('div');
+            cabecalho.innerHTML = `<h3>${categoria} <button class="btn-remover-cat" onclick="removerCategoria('${categoria}')">Apagar Categoria</button></h3>`;
+            divCategoria.appendChild(cabecalho);
+
+            const musicasArray = Object.entries(musicasObj || {});
+
+            if(musicasArray.length === 0) {
+                let p = document.createElement('p');
+                p.innerText = "Nenhuma música adicionada ainda.";
+                p.style.fontSize = "0.9em";
+                divCategoria.appendChild(p);
+            }
+
+            musicasArray.forEach(([idMusica, musica]) => {
+                let label = document.createElement('label');
+                label.className = 'musica-item';
+                if (musica.harmonia) {
+                    label.classList.add('harmonia-vocal');
+                }
+
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = musica.nome;
+                checkbox.dataset.categoria = categoria;
+                checkbox.dataset.harmonia = musica.harmonia;
+                checkbox.className = 'check-lista';
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(musica.nome));
+
+                if (musica.harmonia) {
+                    let tag = document.createElement('span');
+                    tag.className = 'tag-vozes';
+                    tag.innerText = 'Vozes';
+                    label.appendChild(tag);
+                }
+
+                let btnRemover = document.createElement('button');
+                btnRemover.className = 'btn-remover-musica';
+                btnRemover.innerHTML = '&times;';
+                btnRemover.title = "Remover música";
+                btnRemover.onclick = function(e) {
+                    e.preventDefault(); 
+                    window.removerMusica(categoria, idMusica);
+                };
+                label.appendChild(btnRemover);
+
+                divCategoria.appendChild(label);
+            });
+
+            container.appendChild(divCategoria);
+        }
+        
+        if (Object.keys(repertorio).length === 0) {
+            container.innerHTML = '<p style="text-align: center;">Nenhuma música cadastrada ainda. Use o formulário acima!</p>';
+        }
+    }
+
+    // Gerador de Lista (este processo continua sendo local, apenas na tela de quem clica)
+    document.getElementById('btn-gerar-lista').addEventListener('click', () => {
+        const dataInput = document.getElementById('data-missa').value;
+        if (!dataInput) {
+            alert("Por favor, insira a data da missa antes de gerar a lista.");
+            return;
+        }
+
+        const partesData = dataInput.split('-');
+        const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+
+        const checkboxes = document.querySelectorAll('input[type="checkbox"].check-lista:checked');
+        const listaConteudo = document.getElementById('lista-final-conteudo');
+        const listaContainer = document.getElementById('lista-final-container');
+        
+        listaConteudo.innerHTML = '';
+
+        if (checkboxes.length === 0) {
+            alert("Selecione pelo menos uma música!");
+            return;
+        }
+
+        document.getElementById('titulo-lista').innerText = `Lista da Missa - ${dataFormatada}`;
+
+        checkboxes.forEach(cb => {
+            let li = document.createElement('li');
+            let texto = `<strong>${cb.dataset.categoria}:</strong> ${cb.value}`;
+            if (cb.dataset.harmonia === 'true') {
+                texto += ' <em>(Harmonia Vocal)</em>';
+            }
+            li.innerHTML = texto;
+            listaConteudo.appendChild(li);
+        });
+
+        listaContainer.style.display = 'block';
+        listaContainer.scrollIntoView({ behavior: "smooth" });
+    });
+</script>
+
+</body>
+</html>
 
