@@ -79,9 +79,8 @@
         .letra-detalhes summary { cursor: pointer; color: var(--marrom-terracota); font-weight: bold; font-style: italic; outline: none; }
         .letra-texto { margin-top: 8px; background-color: var(--bg-claro); padding: 10px; border-radius: 5px; white-space: pre-wrap; font-family: 'Georgia', serif; }
 
-        /* Ações das músicas */
         .acoes-musica { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-        .btn-editar-musica { background: none; border: none; color: #000000; cursor: pointer; font-size: 1.2em; padding: 0; transition: 0.2s;} /* Lápis agora é preto */
+        .btn-editar-musica { background: none; border: none; color: #000000; cursor: pointer; font-size: 1.2em; padding: 0; transition: 0.2s;}
         .btn-editar-musica:hover { color: var(--marrom-terracota); }
         .btn-remover-musica { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 1.2em; padding: 0; }
 
@@ -91,12 +90,12 @@
         .controles button { background-color: var(--marrom-terracota); color: var(--bg-claro); border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: 0.3s; margin-left: 10px; }
         .controles button:hover { background-color: var(--marrom-escuro); }
 
-        #lista-final-container { display: none; margin-top: 30px; padding: 20px; border: 2px dashed var(--marrom-escuro); border-radius: 10px; background-color: #ffffff; }
-        #lista-final-conteudo { list-style-type: none; padding: 0; }
-        #lista-final-conteudo li { padding: 12px 0; border-bottom: 1px solid var(--bg-claro); }
-        #lista-final-conteudo li strong { color: var(--marrom-terracota); }
+        /* Estilo da nova seção de Listas Salvas */
+        #listas-salvas-container { margin-top: 30px; }
+        .lista-salva-card { background-color: #ffffff; padding: 20px; border-radius: 10px; border: 2px dashed var(--bege-medio); margin-bottom: 20px; }
+        .lista-salva-card ul { list-style-type: none; padding: 0; }
+        .lista-salva-card li { padding: 12px 0; border-bottom: 1px solid var(--bg-claro); }
         
-        /* Modal de Edição */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(91, 72, 74, 0.7); }
         .modal-content { background-color: #ffffff; margin: 5% auto; padding: 25px; width: 90%; max-width: 500px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 2px solid var(--bege-medio); }
         .modal-botoes { display: flex; gap: 10px; margin-top: 15px; }
@@ -105,6 +104,8 @@
             .linha-inputs { flex-direction: column; gap: 10px; align-items: stretch; }
             .grupo-pequeno { width: 100%; }
             .modal-content { margin: 10% auto; padding: 15px; width: 95%; }
+            .controles { display: flex; flex-direction: column; gap: 10px; }
+            .controles button { margin-left: 0; }
         }
     </style>
 </head>
@@ -113,10 +114,8 @@
 <div class="container">
     <h1 class="titulo-app">Repertório <span class="destaque-mpc">MPC</span></h1>
     
-    <!-- Formulário de Adição -->
     <div class="form-adicionar">
         <h2>Adicionar Música</h2>
-        
         <div class="linha-inputs">
             <div class="grupo-flex">
                 <label for="tempo-musica"><strong>Tempo Litúrgico:</strong></label>
@@ -159,7 +158,6 @@
         <button class="btn-adicionar" id="btn-salvar">Salvar Música no App</button>
     </div>
 
-    <!-- Filtros Inteligentes -->
     <div class="filtros-container">
         <h3 style="margin-top: 0; color: var(--marrom-escuro); text-align: center;">Filtrar / Buscar Músicas</h3>
         <div class="linha-inputs" style="margin-bottom: 0;">
@@ -178,20 +176,21 @@
         </div>
     </div>
 
+    <!-- Container das músicas (Checkboxes) -->
     <div id="categorias-container">
         <p style="text-align: center;">Carregando repertório...</p>
     </div>
 
-    <!-- Controles de Geração de Lista -->
+    <!-- Controles para Salvar a Lista na Nuvem -->
     <div class="controles">
-        <label for="data-missa"><strong>Data da Missa:</strong></label>
+        <label for="data-missa"><strong>Data da Missa (Para a Lista):</strong></label>
         <input type="date" id="data-missa" required style="width: auto; display: inline-block;">
-        <button id="btn-gerar-lista">Gerar Lista Final</button>
+        <button id="btn-gerar-lista">Gerar e Salvar Lista</button>
     </div>
 
-    <div id="lista-final-container">
-        <h2 id="titulo-lista">Lista da Missa</h2>
-        <ul id="lista-final-conteudo"></ul>
+    <!-- Listas Salvas (Nuem) -->
+    <div id="listas-salvas-container">
+        <!-- Renderizado via JavaScript -->
     </div>
 </div>
 
@@ -199,7 +198,6 @@
 <div id="modal-edicao" class="modal">
     <div class="modal-content">
         <h2 style="margin-top: 0;">Editar Música</h2>
-        
         <div class="linha-inputs">
             <div class="grupo-flex">
                 <label for="edit-tempo"><strong>Tempo Litúrgico:</strong></label>
@@ -219,7 +217,6 @@
                 <input type="text" id="edit-categoria" required>
             </div>
         </div>
-
         <div class="linha-inputs">
             <div class="grupo-flex">
                 <label for="edit-nome"><strong>Nome da Música:</strong></label>
@@ -230,15 +227,12 @@
                 <input type="text" id="edit-tom">
             </div>
         </div>
-
         <label for="edit-letra"><strong>Letra da Música:</strong></label>
         <textarea id="edit-letra" rows="4"></textarea>
-
         <div class="checkbox-container">
             <input type="checkbox" id="edit-harmonia" class="check-lista">
             <label for="edit-harmonia">Tem harmonia vocal ensaiada?</label>
         </div>
-
         <div class="modal-botoes">
             <button class="btn-cancelar" onclick="fecharModalEdicao()">Cancelar</button>
             <button class="btn-adicionar" id="btn-salvar-edicao">Salvar Alterações</button>
@@ -264,17 +258,30 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const repertorioRef = ref(db, 'repertorio');
+    const listasRef = ref(db, 'listas_missa');
 
     let repertorio = {};
+    let listasSalvas = {};
     let categoriasFechadas = new Set();
+    
+    // Novo: Memória das músicas selecionadas pelo usuário antes de salvar a lista
+    let musicasSelecionadas = new Set();
     
     let editandoId = null;
     let editandoCatOriginal = null;
 
+    // Escuta as mudanças no repertório de músicas
     onValue(repertorioRef, (snapshot) => {
         repertorio = snapshot.val() || {};
         atualizarFiltrosDOM();
         renderizarLista();
+        renderizarListasSalvas(); // Atualiza a exibição se alguma música da lista foi editada
+    });
+
+    // Escuta as mudanças nas Listas Salvas
+    onValue(listasRef, (snapshot) => {
+        listasSalvas = snapshot.val() || {};
+        renderizarListasSalvas();
     });
 
     window.toggleFestaInput = function() {
@@ -316,6 +323,7 @@
         return texto.replace(/\b\w/g, char => char.toUpperCase());
     }
     
+    // --- Lógica de Edição de Música ---
     window.abrirModalEdicao = function(cat, id) {
         editandoId = id;
         editandoCatOriginal = cat;
@@ -357,10 +365,7 @@
         let tempoFinal = document.getElementById('edit-tempo').value;
         if (tempoFinal === 'Festa') {
             const inputFesta = document.getElementById('edit-tempo-festa').value.trim();
-            if(!inputFesta) {
-                alert("Por favor, digite o nome da Festa!");
-                return;
-            }
+            if(!inputFesta) { alert("Por favor, digite o nome da Festa!"); return; }
             tempoFinal = "Festa: " + inputFesta;
         }
 
@@ -372,7 +377,6 @@
         const categoriaNormalizada = normalizarCategoria(categoriaInput);
         const nomeNormalizado = nome.toLowerCase().trim();
         const letraNormalizada = letra ? letra.toLowerCase().replace(/\s/g, '') : ""; 
-
         let musicaDuplicada = false;
         let categoriaExistente = "";
 
@@ -380,18 +384,12 @@
             if (!musicasObj) continue;
             for (const [id, musicaExistente] of Object.entries(musicasObj)) {
                 if (id === editandoId && cat === editandoCatOriginal) continue; 
-
                 if (musicaExistente.nome && musicaExistente.nome.toLowerCase().trim() === nomeNormalizado) {
-                    musicaDuplicada = true;
-                    categoriaExistente = cat;
-                    break;
+                    musicaDuplicada = true; categoriaExistente = cat; break;
                 }
                 if (letraNormalizada.length > 15 && musicaExistente.letra) {
-                    const letraBanco = musicaExistente.letra.toLowerCase().replace(/\s/g, '');
-                    if (letraBanco === letraNormalizada) {
-                        musicaDuplicada = true;
-                        categoriaExistente = cat;
-                        break;
+                    if (musicaExistente.letra.toLowerCase().replace(/\s/g, '') === letraNormalizada) {
+                        musicaDuplicada = true; categoriaExistente = cat; break;
                     }
                 }
             }
@@ -403,26 +401,17 @@
             return; 
         }
 
-        const dadosAtualizados = {
-            nome: nome,
-            tom: tom, 
-            letra: letra, 
-            tempo: tempoFinal, 
-            harmonia: harmonia
-        };
+        const dadosAtualizados = { nome: nome, tom: tom, letra: letra, tempo: tempoFinal, harmonia: harmonia };
 
         if (categoriaNormalizada !== editandoCatOriginal) {
             remove(ref(db, 'repertorio/' + editandoCatOriginal + '/' + editandoId));
-            set(ref(db, 'repertorio/' + categoriaNormalizada + '/' + editandoId), dadosAtualizados).then(() => {
-                fecharModalEdicao();
-            });
+            set(ref(db, 'repertorio/' + categoriaNormalizada + '/' + editandoId), dadosAtualizados).then(() => fecharModalEdicao());
         } else {
-            update(ref(db, 'repertorio/' + editandoCatOriginal + '/' + editandoId), dadosAtualizados).then(() => {
-                fecharModalEdicao();
-            });
+            update(ref(db, 'repertorio/' + editandoCatOriginal + '/' + editandoId), dadosAtualizados).then(() => fecharModalEdicao());
         }
     });
 
+    // --- Lógica de Adicionar Música ---
     document.getElementById('btn-salvar').addEventListener('click', () => {
         let categoriaInput = document.getElementById('nova-categoria').value.trim();
         const nome = document.getElementById('nome-musica').value.trim();
@@ -433,10 +422,7 @@
         let tempoFinal = document.getElementById('tempo-musica').value;
         if (tempoFinal === 'Festa') {
             const inputFesta = document.getElementById('tempo-festa').value.trim();
-            if(!inputFesta) {
-                alert("Por favor, digite o nome da Festa!");
-                return;
-            }
+            if(!inputFesta) { alert("Por favor, digite o nome da Festa!"); return; }
             tempoFinal = "Festa: " + inputFesta;
         }
 
@@ -448,7 +434,6 @@
         const categoria = normalizarCategoria(categoriaInput);
         const nomeNormalizado = nome.toLowerCase().trim();
         const letraNormalizada = letra ? letra.toLowerCase().replace(/\s/g, '') : ""; 
-
         let musicaDuplicada = false;
         let categoriaExistente = "";
 
@@ -456,16 +441,11 @@
             if (!musicasObj) continue;
             for (const [id, musicaExistente] of Object.entries(musicasObj)) {
                 if (musicaExistente.nome && musicaExistente.nome.toLowerCase().trim() === nomeNormalizado) {
-                    musicaDuplicada = true;
-                    categoriaExistente = cat;
-                    break;
+                    musicaDuplicada = true; categoriaExistente = cat; break;
                 }
                 if (letraNormalizada.length > 15 && musicaExistente.letra) {
-                    const letraBanco = musicaExistente.letra.toLowerCase().replace(/\s/g, '');
-                    if (letraBanco === letraNormalizada) {
-                        musicaDuplicada = true;
-                        categoriaExistente = cat;
-                        break;
+                    if (musicaExistente.letra.toLowerCase().replace(/\s/g, '') === letraNormalizada) {
+                        musicaDuplicada = true; categoriaExistente = cat; break;
                     }
                 }
             }
@@ -477,16 +457,8 @@
             return; 
         }
 
-        const categoriaRef = ref(db, 'repertorio/' + categoria);
-        const novaMusicaRef = push(categoriaRef);
-        
-        set(novaMusicaRef, {
-            nome: nome,
-            tom: tom, 
-            letra: letra, 
-            tempo: tempoFinal, 
-            harmonia: harmonia
-        }).then(() => {
+        const novaMusicaRef = push(ref(db, 'repertorio/' + categoria));
+        set(novaMusicaRef, { nome: nome, tom: tom, letra: letra, tempo: tempoFinal, harmonia: harmonia }).then(() => {
             document.getElementById('nome-musica').value = '';
             document.getElementById('tom-musica').value = '';
             document.getElementById('letra-musica').value = '';
@@ -498,11 +470,8 @@
     });
 
     window.toggleCategoria = function(categoriaNome) {
-        if (categoriasFechadas.has(categoriaNome)) {
-            categoriasFechadas.delete(categoriaNome); 
-        } else {
-            categoriasFechadas.add(categoriaNome); 
-        }
+        if (categoriasFechadas.has(categoriaNome)) { categoriasFechadas.delete(categoriaNome); } 
+        else { categoriasFechadas.add(categoriaNome); }
         renderizarLista();
     };
 
@@ -531,25 +500,20 @@
         for (const [cat, musicasObj] of Object.entries(repertorio)) {
             categoriasSet.add(cat);
             if(musicasObj) {
-                Object.values(musicasObj).forEach(m => {
-                    temposSet.add(m.tempo || 'Geral (Qualquer Tempo)');
-                });
+                Object.values(musicasObj).forEach(m => temposSet.add(m.tempo || 'Geral (Qualquer Tempo)'));
             }
         }
 
         filtroTempoSel.innerHTML = '<option value="Todos">Todos os Tempos</option>';
-        Array.from(temposSet).sort().forEach(t => {
-            filtroTempoSel.innerHTML += `<option value="${t}">${t}</option>`;
-        });
+        Array.from(temposSet).sort().forEach(t => filtroTempoSel.innerHTML += `<option value="${t}">${t}</option>`);
         filtroTempoSel.value = temposSet.has(tempoAtual) ? tempoAtual : 'Todos';
 
         filtroCatSel.innerHTML = '<option value="Todas">Todas as Categorias</option>';
-        Array.from(categoriasSet).sort().forEach(c => {
-            filtroCatSel.innerHTML += `<option value="${c}">${c}</option>`;
-        });
+        Array.from(categoriasSet).sort().forEach(c => filtroCatSel.innerHTML += `<option value="${c}">${c}</option>`);
         filtroCatSel.value = categoriasSet.has(catAtual) ? catAtual : 'Todas';
     }
 
+    // --- RENDERIZAÇÃO DAS MÚSICAS (E CHECKBOXES) ---
     window.renderizarLista = function() {
         const container = document.getElementById('categorias-container');
         container.innerHTML = ''; 
@@ -557,18 +521,13 @@
         const filtroTempo = document.getElementById('filtro-tempo').value;
         const filtroCat = document.getElementById('filtro-categoria').value;
 
-        const ordemMissa = [
-            "Canto de Entrada", "Ato Penitencial", "Glória", "Aclamação ao Evangelho",
-            "Ofertório", "Santo", "Canto da Paz", "Cordeiro de Deus", "Comunhão",
-            "Ação de Graças", "Canto Final", "Canto Mariano"
-        ];
+        const ordemMissa = ["Canto de Entrada", "Ato Penitencial", "Glória", "Aclamação ao Evangelho", "Ofertório", "Santo", "Canto da Paz", "Cordeiro de Deus", "Comunhão", "Ação de Graças", "Canto Final", "Canto Mariano"];
 
         let categoriasAtuais = Object.keys(repertorio);
         categoriasAtuais.sort((a, b) => {
             let indexA = ordemMissa.indexOf(a);
             let indexB = ordemMissa.indexOf(b);
-            if (indexA === -1) indexA = 999; 
-            if (indexB === -1) indexB = 999;
+            if (indexA === -1) indexA = 999; if (indexB === -1) indexB = 999;
             if (indexA !== indexB) return indexA - indexB;
             return a.localeCompare(b);
         });
@@ -582,14 +541,12 @@
             if (!musicasObj) return;
 
             let musicasArray = Object.entries(musicasObj);
-            
             let musicasFiltradas = musicasArray.filter(([id, mus]) => {
                 const tempoMus = mus.tempo || 'Geral (Qualquer Tempo)';
                 return filtroTempo === 'Todos' || tempoMus === filtroTempo;
             });
 
             if (musicasFiltradas.length === 0) return;
-
             temAlgoNaTela = true;
 
             let divCategoria = document.createElement('div');
@@ -619,34 +576,29 @@
                 const tempoDisplay = musica.tempo || 'Geral (Qualquer Tempo)';
                 const tLower = tempoDisplay.toLowerCase();
                 
-                if (tLower.includes('comum')) {
-                    divContainer.classList.add('sombra-comum');
-                } else if (tLower.includes('natal')) {
-                    divContainer.classList.add('sombra-natal');
-                } else if (tLower.includes('advento') || tLower.includes('quaresma')) {
-                    divContainer.classList.add('sombra-advento-quaresma');
-                } else if (tLower.includes('festa') || tLower.includes('paixão') || tLower.includes('ramos') || tLower.includes('santo')) {
-                    divContainer.classList.add('sombra-festa');
-                } else if (tLower.includes('páscoa') || tLower.includes('pascoa')) {
-                    divContainer.classList.add('sombra-pascoa');
-                } else {
-                    divContainer.classList.add('sombra-geral');
-                }
+                if (tLower.includes('comum')) divContainer.classList.add('sombra-comum');
+                else if (tLower.includes('natal')) divContainer.classList.add('sombra-natal');
+                else if (tLower.includes('advento') || tLower.includes('quaresma')) divContainer.classList.add('sombra-advento-quaresma');
+                else if (tLower.includes('festa') || tLower.includes('paixão') || tLower.includes('ramos') || tLower.includes('santo')) divContainer.classList.add('sombra-festa');
+                else if (tLower.includes('páscoa') || tLower.includes('pascoa')) divContainer.classList.add('sombra-pascoa');
+                else divContainer.classList.add('sombra-geral');
 
-                if (musica.harmonia) {
-                    divContainer.classList.add('harmonia-vocal');
-                }
+                if (musica.harmonia) divContainer.classList.add('harmonia-vocal');
 
                 let labelLinha = document.createElement('label');
                 labelLinha.className = 'musica-linha';
 
                 let checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.value = musica.nome;
-                checkbox.dataset.categoria = categoria;
-                checkbox.dataset.id = idMusica;
-                checkbox.dataset.harmonia = musica.harmonia;
                 checkbox.className = 'check-lista';
+                // Verifica se essa música já estava na "memória" de seleção
+                checkbox.checked = musicasSelecionadas.has(idMusica);
+                
+                // Ao clicar no checkbox, atualiza a memória local (Set)
+                checkbox.addEventListener('change', (e) => {
+                    if (e.target.checked) musicasSelecionadas.add(idMusica);
+                    else musicasSelecionadas.delete(idMusica);
+                });
 
                 labelLinha.appendChild(checkbox);
                 labelLinha.appendChild(document.createTextNode(musica.nome));
@@ -696,21 +648,12 @@
                 divAcoes.appendChild(btnEditar);
                 divAcoes.appendChild(btnRemover);
                 labelLinha.appendChild(divAcoes);
-
                 divContainer.appendChild(labelLinha);
 
                 if (musica.letra) {
                     let details = document.createElement('details');
                     details.className = 'letra-detalhes';
-                    let summary = document.createElement('summary');
-                    summary.innerText = 'Ver Letra';
-                    
-                    let divLetra = document.createElement('div');
-                    divLetra.className = 'letra-texto';
-                    divLetra.innerText = musica.letra;
-                    
-                    details.appendChild(summary);
-                    details.appendChild(divLetra);
+                    details.innerHTML = `<summary>Ver Letra</summary><div class="letra-texto">${musica.letra}</div>`;
                     divContainer.appendChild(details);
                 }
 
@@ -726,68 +669,126 @@
         }
     }
 
+    // --- SALVAR A LISTA (NUVEM) ---
     document.getElementById('btn-gerar-lista').addEventListener('click', () => {
         const dataInput = document.getElementById('data-missa').value;
         if (!dataInput) {
-            alert("Por favor, insira a data da missa antes de gerar a lista.");
+            alert("Por favor, insira a data da missa!");
             return;
         }
 
-        const partesData = dataInput.split('-');
-        const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
-
-        const checkboxes = document.querySelectorAll('input[type="checkbox"].check-lista:checked');
-        const listaConteudo = document.getElementById('lista-final-conteudo');
-        const listaContainer = document.getElementById('lista-final-container');
-        
-        listaConteudo.innerHTML = '';
-
-        if (checkboxes.length === 0) {
+        if (musicasSelecionadas.size === 0) {
             alert("Selecione pelo menos uma música marcando a caixinha ao lado do nome!");
             return;
         }
 
-        document.getElementById('titulo-lista').innerText = `Lista da Missa - ${dataFormatada}`;
-
-        checkboxes.forEach(cb => {
-            let li = document.createElement('li');
-            
-            const cat = cb.dataset.categoria;
-            const idMusica = cb.dataset.id;
-            const musicaObj = repertorio[cat][idMusica];
-
-            let texto = `<strong>${cat}:</strong> ${cb.value}`;
-            
-            if (musicaObj && musicaObj.tom) {
-                texto += ` <span style="color: var(--marrom-escuro); font-weight: bold;">[${musicaObj.tom}]</span>`;
-            }
-
-            if (cb.dataset.harmonia === 'true') {
-                texto += ' <em>(Harmonia Vocal)</em>';
-            }
-            li.innerHTML = texto;
-
-            if (musicaObj && musicaObj.letra) {
-                let details = document.createElement('details');
-                details.className = 'letra-detalhes';
-                let summary = document.createElement('summary');
-                summary.innerText = 'Ver Letra';
-                
-                let divLetra = document.createElement('div');
-                divLetra.className = 'letra-texto';
-                divLetra.innerText = musicaObj.letra;
-                
-                details.appendChild(summary);
-                details.appendChild(divLetra);
-                li.appendChild(details);
-            }
-
-            listaConteudo.appendChild(li);
+        // Salva a lista na nuvem apontando para a Data selecionada
+        const novaListaRef = ref(db, 'listas_missa/' + dataInput);
+        set(novaListaRef, {
+            data: dataInput,
+            ids: Array.from(musicasSelecionadas)
+        }).then(() => {
+            alert("Lista salva e compartilhada com sucesso!");
+            document.getElementById('listas-salvas-container').scrollIntoView({ behavior: "smooth" });
         });
-
-        listaContainer.style.display = 'block';
-        listaContainer.scrollIntoView({ behavior: "smooth" });
     });
+
+    // --- RENDERIZAR E EDITAR LISTAS SALVAS (NUVEM) ---
+    function renderizarListasSalvas() {
+        const container = document.getElementById('listas-salvas-container');
+        container.innerHTML = '<h2 style="text-align: center; color: var(--marrom-terracota);">Listas Salvas (Compartilhadas)</h2>';
+
+        const datas = Object.keys(listasSalvas).sort(); // Ordena por data (crescente)
+        
+        if (datas.length === 0) {
+            container.innerHTML += '<p style="text-align: center;">Nenhuma lista foi gerada ainda.</p>';
+            return;
+        }
+
+        datas.forEach(data => {
+            const lista = listasSalvas[data];
+            
+            const partesData = data.split('-');
+            const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+
+            let card = document.createElement('div');
+            card.className = 'lista-salva-card';
+
+            card.innerHTML = `
+                <div class="categoria-header">
+                    <h3 style="color: var(--marrom-terracota);">📅 Missa - ${dataFormatada}</h3>
+                    <div>
+                        <button class="btn-remover-cat" style="color:var(--marrom-escuro); border-color:var(--marrom-escuro);" onclick="editarListaMissa('${data}')">✎ Editar Lista</button>
+                        <button class="btn-remover-cat" onclick="apagarListaMissa('${data}')">&times; Apagar</button>
+                    </div>
+                </div>
+            `;
+
+            let ul = document.createElement('ul');
+            
+            if (lista.ids && lista.ids.length > 0) {
+                lista.ids.forEach(idMusica => {
+                    // Procura as informações da música no banco principal
+                    let musicaData = null;
+                    let musicaCat = null;
+                    for (const [cat, musicasObj] of Object.entries(repertorio)) {
+                        if (musicasObj && musicasObj[idMusica]) {
+                            musicaData = musicasObj[idMusica];
+                            musicaCat = cat;
+                            break;
+                        }
+                    }
+
+                    if (musicaData) {
+                        let li = document.createElement('li');
+                        let texto = `<strong>${musicaCat}:</strong> ${musicaData.nome}`;
+                        if (musicaData.tom) texto += ` <span style="color: var(--marrom-escuro); font-weight: bold;">[${musicaData.tom}]</span>`;
+                        if (musicaData.harmonia) texto += ' <em>(Harmonia Vocal)</em>';
+                        li.innerHTML = texto;
+
+                        if (musicaData.letra) {
+                            let details = document.createElement('details');
+                            details.className = 'letra-detalhes';
+                            details.innerHTML = `<summary>Ver Letra</summary><div class="letra-texto">${musicaData.letra}</div>`;
+                            li.appendChild(details);
+                        }
+                        ul.appendChild(li);
+                    }
+                });
+            } else {
+                ul.innerHTML = '<li>Lista vazia ou músicas foram apagadas do banco de dados.</li>';
+            }
+            
+            card.appendChild(ul);
+            container.appendChild(card);
+        });
+    }
+
+    // Botão de editar uma lista salva
+    window.editarListaMissa = function(data) {
+        const lista = listasSalvas[data];
+        
+        // Coloca as músicas na memória do aplicativo novamente
+        musicasSelecionadas = new Set(lista.ids || []);
+        
+        // Seta a data no controle e atualiza a tela
+        document.getElementById('data-missa').value = data;
+        
+        // Garante que não há filtros ocultando a lista
+        document.getElementById('filtro-tempo').value = 'Todos';
+        document.getElementById('filtro-categoria').value = 'Todas';
+        
+        renderizarLista();
+        
+        alert("Lista carregada! Faça suas marcações e clique em 'Gerar e Salvar Lista' para atualizar.");
+        document.querySelector('.filtros-container').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.apagarListaMissa = function(data) {
+        if(confirm(`Tem certeza que deseja apagar a lista do dia ${data}?`)) {
+            remove(ref(db, 'listas_missa/' + data));
+        }
+    };
 </script>
 
 </body>
